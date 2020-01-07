@@ -200,6 +200,14 @@ class C_naiveBayes extends CI_Controller
         $this->db->truncate('datapenjualan');
         redirect('c_naivebayes/homedata');
     }
+
+    function apidata()
+    {
+        $data = $this->M_NaiveBayes->getDataAPI();
+        echo "<pre>";
+        print_r($data);
+        echo "</pre>";
+    }
     function logout()
     {
         $this->session->unset_userdata('login');
