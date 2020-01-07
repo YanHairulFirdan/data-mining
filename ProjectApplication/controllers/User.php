@@ -33,7 +33,7 @@ class User extends CI_Controller
             $this->session->set_userdata('login', 'ok');
             $this->session->set_userdata('admin', $this->input->post('namauser'));
 
-            redirect(site_url() . '/c_naivebayes/homedata');
+            redirect(site_url() . '/c_naivebayes/apidata');
         }
     }
 }

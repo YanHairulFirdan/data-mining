@@ -203,10 +203,16 @@ class C_naiveBayes extends CI_Controller
 
     function apidata()
     {
-        $data = $this->M_NaiveBayes->getDataAPI();
-        echo "<pre>";
-        print_r($data);
-        echo "</pre>";
+        $data["data"] = $this->M_NaiveBayes->getDataAPI();
+        $data['currentTime'] = time();
+        // echo "<pre>";
+        // print_r($data);
+        // echo "</pre>";
+        $data['judul'] = "Halaman Dashboard";
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/aside');
+        $this->load->view('dashboard', $data);
+        $this->load->view('templates/footer');
     }
     function logout()
     {
