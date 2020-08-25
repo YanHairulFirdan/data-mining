@@ -1,0 +1,243 @@
+    body{
+        padding: 0;
+        margin: 0;
+        background-color: rgba(223, 219, 213, 0.404);
+    }
+    .jumbotron .container{
+        height: 290px;
+        background-image: url('../img/forJumbotron.png');
+        background-size: auto;
+        background-position: top;
+        background-repeat: no-repeat;
+            
+    }
+    .jumbotron{
+        box-shadow: 0 2px #78797a75;
+        margin-top: -60px;
+    }
+    .jumbotron .container h4{
+        margin-top: 50px;
+        font-size: 3vw;
+        color: #b7c2d3;
+        
+    }
+
+    /* .card{
+        height: 260px;
+        width: 16rem;
+    } */
+    .list-motor .card{
+        border: 2px solid #3a57748a;
+        box-shadow: 5px 5px  #0e0e0fbe;
+        margin: 0 auto 5px;
+    }
+    .list-motor .card img{
+        width: 100%;
+        padding: 2px 25px 5px 25px;
+        border-bottom: 4px solid #3a57748a;
+        margin: auto;
+        
+    }
+    .col-md-4{
+        margin: 0 0 15px;
+    }
+    .card-body{
+        padding: 10px 5px 0px;
+    }
+    .carousel-item{
+        display: block;
+    }
+    .card-body .btn{
+        width: 100%;
+        margin-bottom: 2px;
+        /* padding: 0 5px 0 15px; */
+    }
+    .card-body .name, .price{
+        margin-top: -5px;
+        font-weight: 500;
+        font-size: 16px;
+        display: block;
+        /* padding: 0 10px 0 100px; */
+    }
+
+    /* information */
+    .information {
+        /* width : 800px; */
+        margin: auto;
+        /* background-color: blueviolet; */
+    }
+    .information .row .container{
+        /* padding: 0 5px; */
+        /* margin: 10px 0; */
+        width: 350px;
+        padding-left: 100px;
+
+        
+    }
+    .about-us{
+        background-color: rgba(23, 0, 184, 0.64);
+    }
+    .information .col-md-4{
+        /* margin: 0 10px; */
+        /* margin: auto; */
+        margin-top: 5px;
+        /* width: 40%; */
+        padding-left:40px;
+        padding-right: 40px;
+        
+    }
+    .image-content{
+        padding: 10px 20px 10px 80px;
+
+    }
+    .image-content img{
+        width: 200px;
+        height: 200px;
+        padding: 0 10px;
+    }
+
+    .card-image img{
+        width: 100%;
+        height: 200px;
+        padding: 15px;
+    }
+    .conteiner .card{
+        background-color: rgb(161, 153, 226);
+        border-radius: 10px;
+        height: 280px;
+
+    }
+    .img-op img{
+        opacity: 0.6;
+    }
+    .card-body h5{
+        font-size: 1rem;
+        text-align: center;
+    }
+    footer .row{
+        width: 90%;
+    }
+    /* link footer */
+    footer {
+        background-color: rgba(24, 3, 133, 0.78);
+        color: rgba(199, 198, 219, 0.85);
+        text-align: center;
+        padding: 30px 0 0 0;
+
+    }
+    .links h5{
+        padding-left: 30px;
+    }
+    footer ul li , footer ul li a, .list-contact p a{
+        list-style: none;
+        text-align: center;
+        color: rgba(199, 198, 219, 0.85);    
+    }
+    /* breakpoint for smartphone */
+    @media (max-width: 767.98px) { 
+        .link-motor a{
+            width: 100%;
+        }
+        .navbar-collapse{
+            background-color: #e0e9e5f5;
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            width: 100%;
+        }
+        .collapse .navbar-nav a{
+            color: rgb(29, 31, 31);
+            font-size: 4vw;
+            padding-left: 20px;
+            border-bottom: 2px solid rgba(17, 17, 17, 0.705);
+        }
+        .collapse .navbar-nav a:hover{
+            color: rgb(41, 44, 44);
+            background-color: rgba(27, 230, 230, 0.699);
+            font-size: 4.5vw;
+
+        }
+    .jumbotron .container{
+        height: 250px;
+        width: 100%;
+        background-size: contain;
+    }
+
+    .carousel-item{
+        display: none;
+    }
+
+    .jumbotron .container h4{
+        margin-top: 40px;
+        font-size: 5vw;
+        color:rgba(5, 5, 5, 0.959); 
+    }
+    .list-motor{
+        margin-bottom: 35px;
+    }
+    .list-motor::before{
+        content: '<';
+        color: rgba(29, 22, 22, 0.747);
+        position: absolute;
+        top: 90px;
+        left: 18px;
+        font-size: 6vh;
+        font-weight: 800;
+    }
+
+    .list-motor::after{
+        content: '>';
+        color: rgba(29, 22, 22, 0.747);
+        position: absolute;
+        top: 90px;
+        right: 18px;
+        font-size: 6vh;
+        font-weight: 800;
+    }
+    .hide-item, .hide-col{
+        display: none;
+    }
+
+    .information {
+        /* width : 75%; */
+        margin: auto;
+        background-color: rgba(24, 3, 133, 0.78);
+    }
+    .information  .col-md-4 .card, .card{
+        margin: auto;
+        width: 200px;
+        text-align: center;
+        padding: 0;
+        
+    }
+
+    /* card for daftar motor */
+    .col-sm-3{
+        width: 40%;
+    }
+    .col-sm-3 .card{
+        width: 100%;
+        max-width: 100px;
+        max-height: 100px;
+    }
+    footer ul li , footer ul li a, .list-contact p a{
+        list-style: none;
+        text-align: left;
+        color: rgba(199, 198, 219, 0.85);    
+        font-size: 5vw;
+    }
+    .header-div h5{
+        text-align: left;   
+        /* padding-left: 30px;      */
+    }
+    .address p, .list-contact p{
+        text-align: left;   
+        /* padding-left: 40px;   */
+    }
+    /* footer .row{
+        
+        width: 80% ;
+    } */
+
+    }

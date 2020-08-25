@@ -24,7 +24,7 @@
         <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
         <li class="nav-item">
-          <a href="<?= site_url() ?>/c_naivebayes/homedata" class="nav-link active">
+          <a href="<?= site_url() ?>/c_naivebayes/apidata" class="nav-link active">
             <i class="nav-icon fas fa-tachometer-alt"></i>
             <p>
               Home
@@ -53,6 +53,15 @@
             </ul> -->
         </li>
         <li class="nav-item">
+          <a href="<?= site_url() ?>/c_naivebayes/homedata" class="nav-link">
+            <i class="nav-icon fas fa-th"></i>
+            <p>
+              Data Training
+              <!-- <span class="right badge badge-danger">New</span> -->
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
           <a href="<?= site_url() ?>/c_naivebayes/prediksi" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
@@ -79,6 +88,7 @@
             </p>
           </a>
         </li>
+        <!-- ḷoo -->
         <li class="nav-item">
           <a href="<?= site_url() ?>/c_naivebayes/logout" class="nav-link">
             <i class="ml-1 fas fa-sign-out-alt"></i>

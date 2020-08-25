@@ -1,0 +1,11 @@
+extends: chartjs
+
+env:
+  browser: true
+  node: true
+
+parserOptions:
+  ecmaVersion: 2018
+  sourceType: 'module'
+
+plugins: ['html']

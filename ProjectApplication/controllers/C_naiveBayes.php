@@ -12,17 +12,18 @@ class C_naiveBayes extends CI_Controller
 
     function index()
     {
+        // phpinfo();
         $this->load->view('Login/loginView');
     }
     // untuk data percobaan
-    function home()
-    {
-        $data['dataTraining'] = $this->M_NaiveBayes->getDataTraining();
-        $this->load->view('templates/header');
-        $this->load->view('templates/aside', $data);
-        $this->load->view('home', $data);
-        $this->load->view('templates/footer', $data);
-    }
+    // function home()
+    // {
+    //     $data['dataTraining'] = $this->M_NaiveBayes->getDataTraining();
+    //     $this->load->view('templates/header');
+    //     $this->load->view('templates/aside', $data);
+    //     $this->load->view('home', $data);
+    //     $this->load->view('templates/footer', $data);
+    // }
 
     //untuk data real
     function homedata()
@@ -38,19 +39,17 @@ class C_naiveBayes extends CI_Controller
         $this->load->view('tampilData', $data);
         $this->load->view('templates/footer', $data);
     }
-
-    //untuk data percobaan
-    function predict()
+    function sampleData()
     {
 
-        $this->db->query("TRUNCATE perhitungan");
-        // die;
-        $data['dataTraining'] = $this->M_NaiveBayes->getDataTraining();
-        $this->load->view('templates/header');
-        $this->load->view('templates/aside', $data);
-        $this->load->view('formPrediction', $data);
+        $data['dataTraining'] = $this->M_NaiveBayes->getDataPenjualan();
+        $data['judul'] = "Halaman Home";
+        $this->load->view('templates/header', $data);
+        $this->load->view('templates/aside');
+        $this->load->view('sampleView', $data);
         $this->load->view('templates/footer', $data);
     }
+
 
     //untuk data real
     function prediksi()
@@ -65,23 +64,6 @@ class C_naiveBayes extends CI_Controller
         $this->load->view('templates/aside');
         $this->load->view('halamanPrediksi', $data);
         $this->load->view('templates/footer');
-    }
-
-
-    // untuk data percobaan
-
-    function hasilPrediksi()
-    {
-
-        // jumlah data kasus
-
-        $query = $this->db->query('SELECT * FROM datapenjualan');
-
-        $data['prediksi'] = $this->M_NaiveBayes->getDataPrediksi();
-        $this->load->view('templates/header');
-        $this->load->view('templates/aside', $data);
-        $this->load->view('tampilHasil', $data);
-        $this->load->view('templates/footer', $data);
     }
 
     // untuk data real
@@ -186,9 +168,11 @@ class C_naiveBayes extends CI_Controller
         if ($this->session->userdata('login') != 'ok') {
             redirect(site_url('./user/login'));
         }
-
         $data = $this->M_NaiveBayes->dataChart();
         $data['judul'] = "Halaman Informasi Grafik";
+        echo "<pre>";
+        print_r(json_encode($data));
+        echo "</pre>";
         $this->load->view('templates/header', $data);
         $this->load->view('templates/aside');
         $this->load->view('chart', $data);
@@ -208,12 +192,31 @@ class C_naiveBayes extends CI_Controller
         // echo "<pre>";
         // print_r($data);
         // echo "</pre>";
-        $data['judul'] = "Halaman Dashboard";
+        $data['judul'] = "landing page";
         $this->load->view('templates/header', $data);
         $this->load->view('templates/aside');
         $this->load->view('dashboard', $data);
         $this->load->view('templates/footer');
     }
+
+    // function continuousdata(){
+    //     $arr = [1,2,3,4];
+    //     $num = [ 850, 1100, 1150, 1250, 750, 900];
+
+    //     echo array_sum($num)."<br>";
+    //     $mean = array_sum($arr)/count($arr);
+    //     $n = count($arr);
+    //     // $std_deviation = stats_variance($arr);
+    //     $temp  = 0;
+    //     foreach ($arr as $i) {
+    //         $temp += pow(($i - $mean), 2);
+    //     }
+    //     $std_deviation = sqrt(($temp/$n));
+    //     echo $mean;
+    //     echo "<br>";
+    //     echo $std_deviation;
+    // }
+
     function logout()
     {
         $this->session->unset_userdata('login');

@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "C:\\xampp\\htdocs\\phpmvc"
+		},
+		{
+			"path": "C:\\xampp\\htdocs\\Ci3"
+		},
+		{
+			"path": "C:\\xampp\\htdocs\\Ci3_project"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "Ci3"
+	}
+}

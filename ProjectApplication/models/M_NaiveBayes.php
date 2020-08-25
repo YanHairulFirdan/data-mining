@@ -68,30 +68,30 @@ class M_NaiveBayes extends CI_Model
     {
         // $arr = [];
         $hasil = $this->getData("daftaratribut", "namaAtribut");
-
-
+        echo "<pre>";
+        print_r($hasil);
+        echo "</pre>";
+        echo "called";
+        echo "==================================================";
         foreach ($hasil->result_array() as $hsl) {
-            // comment for temporary while calculate all of value for perhitungan's tabel
-
-            // mengambil jumlah total kasus yang dari atribut yang nilainya sama dengan data baru
             $namaKolom = $hsl['namaAtribut'];
-            // echo $namaKolom . "<br/>";
+
             foreach ($this->input->post() as $dataForm) {
 
                 $totalKasus = $this->db->where([$namaKolom => $dataForm])->from('kasus')->count_all_results();
                 if ($totalKasus == 0) {
                     continue;
                 } else {
-                    // echo $dataForm . " : " . $totalKasus  . "<br/>";
                 }
+
+                // if($dataForm == 'jml_')
 
                 //get data play = yes
                 $playYes = $this->db->where([$namaKolom => $dataForm, "play" => "yes"])->from('kasus')->count_all_results();
                 // echo $dataForm . " : " . $playYes  . "<br/>";
                 //get data play = no
                 $playNo = $this->db->where([$namaKolom => $dataForm, "play" => "no"])->from('kasus')->count_all_results();
-                // echo $dataForm . " : " . $playNo  . "<br/>";
-                //  update tabel perhitungan
+
                 $data = [
                     'id' => '',
                     'namaAtribut' => $namaKolom,
@@ -105,8 +105,6 @@ class M_NaiveBayes extends CI_Model
                 $this->db->insert('perhitungan', $data);
             }
         }
-
-
         // menghitung jumlah probabilitas yes dan no
         $this->db->select('namaAtribut, jumlahKasus, jumlahYes, jumlahNo');
         $dataJumlah = $this->db->get('perhitungan');
@@ -145,6 +143,15 @@ class M_NaiveBayes extends CI_Model
         return $data;
     }
 
+
+    function gaussDistribution($prop)
+    {
+        // get mean
+        // insert tio mean table
+        // get attributes
+        // calculate standard deviation population for each attribute or single attribute
+
+    }
     // get data prediksi for data penjualan
     function getDataPrediksiPenjualan()
     {
@@ -235,23 +242,32 @@ class M_NaiveBayes extends CI_Model
     }
 
 
-    // function for real case
+    // function for real case untuk memasukkan jumlah probabilitas 
     function insertTablePerhitungan()
     {
+
         $daftarAtribut = $this->db->select('namaatribut')->from('daftaratributprediksi')->get()->result_array();
         foreach ($daftarAtribut as $namaatribut) {
             $namaKolom = $namaatribut['namaatribut'];
             //mendapatkan jumlah total kasus dari setiap atribut
             // $totalKasus = $this->db->where();
             //for debugging purpose
-
+            // echo "<pre>";
+            // print_r($namaKolom);
+            // echo "</pre>";
             // end of debugging
-            foreach ($this->input->post() as $dataForm) {
+            foreach ($this->input->post() as $index => $dataForm) {
                 $totalKasus = $this->db->where([$namaKolom => $dataForm])->from('datapenjualan')->count_all_results();
+                echo $index . "<br>";
 
                 if ($totalKasus == 0) {
                     continue;
                 } else {
+                }
+
+
+                if ($index == 'jml_pembelian') {
+                    $this->gaussDistribution($dataForm);
                 }
 
                 //get data status = laris
@@ -384,6 +400,39 @@ class M_NaiveBayes extends CI_Model
         // }
         // var_dump($data);
         // die;
+
+
+
         return $data;
+    }
+
+    function getDataAPI()
+    {
+        $apiKey = "a275dcb919a86da0506747f7720531b5";
+        $apiName = "APIkey";
+        $idCity = "1621177";
+        date_default_timezone_set("Asia/Jakarta");
+        $apiURL = "api.openweathermap.org/data/2.5/weather?id=" . $idCity . "&lang=en&units=mnetric&APPID=" . $apiKey;
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_URL, $apiURL);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        curl_close($ch);
+        $data = json_decode($response);
+
+        return $data;
+    }
+
+    function crossValidation($data)
+    {
+        // looping for k = 5 times
+    }
+    function classification()
+    {
     }
 }

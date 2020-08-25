@@ -9,6 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="<?= base_url('assets/templates/back/') ?>plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="<?= base_url('assets/templates/back/') ?>plugins/fontawesome-free/css/style.css">
+    <!-- <link rel="stylesheet" href="<?= base_url('assets/css/') ?>style.css"> -->
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <!-- Tempusdominus Bbootstrap 4 -->
@@ -30,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
 </head>
 
-<body class="hold-transition sidebar-mini layout-fixed">
+<body class="hold-transition sidebar-mini layout-fixed" ng-app="myApp" ng-controller="myCtrl">
     <div class="wrapper">
 
         <!-- Navbar -->
@@ -51,7 +53,7 @@
             <!-- SEARCH FORM -->
             <form class="form-inline ml-3" method="POST" action="searching">
                 <div class="input-group input-group-sm">
-                    <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="keyword">
+                    <input class="form-control form-control-navbar" ng-model="keyword" type="search" placeholder="Search" aria-label="Search" name="keyword">
                     <div class="input-group-append">
                         <button class="btn btn-navbar" type="submit">
                             <i class="fas fa-search"></i>
@@ -155,5 +157,3 @@
             </ul>
         </nav>
         <!-- /.navbar -->
-
-        <body>

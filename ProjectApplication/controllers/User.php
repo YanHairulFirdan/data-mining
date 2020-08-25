@@ -9,7 +9,7 @@ class User extends CI_Controller
     }
     function login()
     {
-        echo $this->session->userdata('login');
+        
         // var_dump($this->load->library('form_validation'));
         $this->load->library('form_validation');
         // $this->load->library('form_validation');

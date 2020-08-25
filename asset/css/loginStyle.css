@@ -1,0 +1,14 @@
+body{
+    background-image: url("../img/dataMining.jpg");
+    background-repeat: no-repeat;
+    background-size: inherit;
+    background-origin: content-box;
+}.form-login {
+    width: 400px;
+    height: auto;
+    background-color: rgba(41, 39, 39, 0.897);
+    transform:translate(10%,  50%);   
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+

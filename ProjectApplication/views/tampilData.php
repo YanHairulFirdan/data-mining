@@ -14,6 +14,11 @@
             </div>
         </div>
     <?php endif; ?>
+    <?php
+    // echo "<pre>";
+    // print_r($dataTraining);
+    // echo "</pre>";
+    ?>
     <table class="table table-bordered mt-5">
         <thead>
             <tr>
