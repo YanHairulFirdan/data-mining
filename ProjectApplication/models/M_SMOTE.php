@@ -4,6 +4,7 @@ class M_Smote extends CI_Model
 	const kVal = 5;
 	private $nnArray = [];
 	const numberOfAttributes = 8;
+	public static $allData = [];
 	public static $syntheticData = [];
 	public $dataset = [
 		[2,	32,	12,		6,	3,	35,	5,	0],
@@ -102,12 +103,12 @@ class M_Smote extends CI_Model
 
 	];
 	public static $diskretData = [];
-	public function getMinoritydata()
-	{
-		$this->roundingVal();
-		$this->diskritVal();
-		return self::$syntheticData;
-	}
+	// public function getMinoritydata()
+	// {
+	// 	$this->roundingVal();
+	// 	$this->diskritVal();
+	// 	return self::$syntheticData;
+	// }
 
 	public function smote($numberDataSample, $percentage, $kVal)
 	{
@@ -131,14 +132,11 @@ class M_Smote extends CI_Model
 		foreach ($this->dataset as $key => $data) {
 			if ($currentData != $data) {
 				$totalDistance = 0;
-				// $distance[$index] = $getNearest[$index] = $currentData.array_map(callback, arr1)
-
 				// looping each attributes field from currentData
 				$currentDataDistance = null;
 				foreach ($currentData as $indexCurrent => $value) {
 					$currentDataDistance[$value] = pow(($value - $data[$indexCurrent]), 2);
 				}
-
 				// reduce to get the distance between two array
 				foreach ($currentDataDistance as $currentDistance) {
 					$totalDistance += $currentDistance;
@@ -162,7 +160,7 @@ class M_Smote extends CI_Model
 	{
 		$i = 0;
 		$nearestIndex = [];
-		while ($i < 5) {
+		while ($i < self::kVal) {
 			$index = array_search($sorterNeirestNeigborList[$i], $nearestNeighborsList, true);
 			array_push($nearestIndex, $index);
 			$i++;
@@ -170,6 +168,8 @@ class M_Smote extends CI_Model
 
 		return $nearestIndex;
 	}
+
+
 	private function roundingVal()
 	{
 		for ($i = 0; $i < count(self::$syntheticData); $i++) {
@@ -239,7 +239,7 @@ class M_Smote extends CI_Model
 						if ($tuple == 0) {
 							$diskretVal[$arrayOfLabel[$index]] = 'fail';
 						} else {
-							$diskretVal[$arrayOfLabel[$index]] = 'success9/5';
+							$diskretVal[$arrayOfLabel[$index]] = 'success/5';
 						}
 
 					default:
@@ -247,9 +247,6 @@ class M_Smote extends CI_Model
 						break;
 				}
 			}
-			// echo "<pre>";
-			// print_r($diskretVal);
-			// echo "</pre>";
 			array_push(self::$diskretData, $diskretVal);
 		}
 		$diskretVal = [];
@@ -257,12 +254,8 @@ class M_Smote extends CI_Model
 
 	function getAllRawData()
 	{
-
-
 		$allData = array_merge($this->majoritydata, $this->dataset);
-
 		shuffle($allData);
-
 		return $allData;
 	}
 
@@ -278,14 +271,27 @@ class M_Smote extends CI_Model
 
 	function getsampleddata()
 	{
-		$totalDataSet = [];
-		$totalDataSet = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
-		$dataset['dataset'] = $totalDataSet;
+		// $totalDataSet = [];
+		$this->roundingVal();
+		$this->diskritVal();
+		self::$allData = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
+		shuffle(self::$allData);
+		$dataset['dataset'] = self::$allData;
 		$data[0] = count(array_merge($this->dataset, self::$syntheticData));
 		$data[1] = count($this->majoritydata);
 		$dataset['count'] = $data;
-
-
 		return $dataset;
+	}
+
+	function savedata()
+	{
+
+		// $totalDataSet = shuffle($totalDataSet);
+
+
+		echo "<pre>";
+		print_r(self::$allData);
+		echo "</pre>";
+		// self::$allData = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
 	}
 }

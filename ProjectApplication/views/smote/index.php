@@ -46,7 +46,11 @@
 	<div class="btn-collections">
 		<button class="btn btn-success ml-2" id="tgl-btn">Tampilkan semua</button>
 		<?php if ($this->session->flashdata('msg')) : ?>
-			<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a>
+			<?php if ($this->session->flashdata('msg') == 'simpan data') : ?>
+				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">simpan data</a>
+			<?php else : ?>
+				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a>
+			<?php endif; ?>
 		<?php endif; ?>
 	</div>
 	<div class="row mt-5">
