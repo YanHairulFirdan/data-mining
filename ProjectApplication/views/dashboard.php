@@ -1,12 +1,12 @@
 <div class="container mb-5">
-<div class="row">
-    
-    <div class="col-md-12">
-        <h2>Selamat Datang di Aplikasi Data Mining Berbasis Website</h2>
-        <p>Aplikasi ini merupakan aplikasi untuk prediksi yang menggunakan Algoritma Naive Bayes yang diintegrasikan dengan algoritma SMOTE</p>
-        <a class="btn btn-primary" href="<?= site_url() ?>/c_naivebayes/homedata">tampilkan data awal</a>
-    </div>
-    <!-- <div class="col-md-4">
+    <div class="row">
+
+        <div class="col-md-12">
+            <h2>Selamat Datang di Aplikasi Data Mining Berbasis Website</h2>
+            <p>Aplikasi ini merupakan aplikasi untuk prediksi yang menggunakan Algoritma Naive Bayes yang diintegrasikan dengan algoritma SMOTE</p>
+            <a class="btn btn-primary" href="<?= site_url() ?>/smote/">tampilkan data awal</a>
+        </div>
+        <!-- <div class="col-md-4">
         <div class="container mt-2">
             <div class="card bg-light mb-3" style="max-width: 26rem;">
                 <div class="card-header">
@@ -29,5 +29,5 @@
                 </div>
             </div>
         </div>-->
-    </div> 
     </div>
+</div>

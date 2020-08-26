@@ -275,4 +275,17 @@ class M_Smote extends CI_Model
 
 		return $data;
 	}
+
+	function getsampleddata()
+	{
+		$totalDataSet = [];
+		$totalDataSet = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
+		$dataset['dataset'] = $totalDataSet;
+		$data[0] = count(array_merge($this->dataset, self::$syntheticData));
+		$data[1] = count($this->majoritydata);
+		$dataset['count'] = $data;
+
+
+		return $dataset;
+	}
 }

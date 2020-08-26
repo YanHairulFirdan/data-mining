@@ -1,7 +1,10 @@
 <div class="container">
+	<h3 class="text-center mb-2 mt-2">
+		<?= $header ?>
+	</h3>
 	<div class="row table-wrapper" style="margin-left: 4em">
-		<div class="col-md-12 ">
-			<table class="table table-bordered mb-5">
+		<div class="col-md-12 p-2">
+			<table class="table table-bordered mb-3">
 				<thead>
 					<tr>
 						<th scope="col" class="text-center">no</th>
@@ -41,7 +44,10 @@
 		<br>
 	</div>
 	<div class="btn-collections">
-		<button class="btn btn-success" id="tgl-btn">Tampilkan semua</button>
+		<button class="btn btn-success ml-2" id="tgl-btn">Tampilkan semua</button>
+		<?php if ($this->session->flashdata('msg')) : ?>
+			<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a>
+		<?php endif; ?>
 	</div>
 	<div class="row mt-5">
 		<div class="col-md-12">
@@ -52,8 +58,8 @@
 </div>
 <script>
 	var ctx = document.getElementById("canvas").getContext('2d');
+	var show = false;
 	let labels = ['minoritas', 'mayoritas'];
-	var tglbutton = document.querySelector("#tgl-button");
 	var myChart = new Chart(ctx, {
 		type: 'bar',
 		data: {
@@ -90,4 +96,48 @@
 			}
 		}
 	});
+
+	let tglbutton = document.querySelector("#tgl-btn");
+	tglbutton.addEventListener('click', function() {
+		var tableContainer = document.querySelector('.table-wrapper');
+		let tglbutton = document.querySelector("#tgl-btn");
+		// var show = false;
+
+		if (!show) {
+			tableContainer.style.maxHeight = 'fit-content';
+			tglbutton.innerText = 'Tampilkan Sedikit'
+			show = !show;
+			console.log('click')
+		} else {
+			tableContainer.style.maxHeight = '20em';
+			tglbutton.innerText = 'Tampilkan Banyak'
+			show = !show;
+			console.log('click')
+		}
+	});
+
+	const showHide = () => {
+		var tableContainer = document.querySelector('.table-wrapper');
+		let tglbutton = document.querySelector("#tgl-btn");
+
+		if (!show) {
+			tableContainer.style.maxHeight = 'fit-content';
+			tglbutton.innerText = 'Tampilkan Sedikit'
+			show = !show;
+			console.log(show)
+		}
+		if (show) {
+			tableContainer.style.maxHeight = '20em';
+			tglbutton.innerText = 'Tampilkan Banyak'
+			show = !show;
+			console.log(show)
+
+		}
+
+		// $('#tgl-btn').click(function() {
+		// 	$('.table-wrapper').animate({
+		// 		height: 'fit-content'
+		// 	})
+		// })
+	}
 </script>
