@@ -8,26 +8,23 @@ class Smote extends CI_Controller
 		if ($this->session->userdata('login') != 'ok') {
 			redirect(site_url('./user/login'));
 		}
-		$this->load->model('M_Smote');
 	}
 	public function index()
 	{
+		$this->load->model('M_Smote');
+
 		$this->M_Smote->smote(19, 400, M_Smote::kVal);
-		// echo count($this->M_Smote->getMinorityData());
+
 		$dataset['judul'] = 'resampling data';
 		$dataset['header'] = 'data asli';
 		$dataset['dataset'] = $this->M_Smote->getAllRawData();
 		$data = $this->M_Smote->getCount();
 		$this->session->set_flashdata('msg', 'sampled');
-		// echo "<pre>";
-		// print_r(count($dataset['dataset']));
-		// echo "</pre>";
-		// die;
+
 		$dataset['judul'] = 'resampling data';
 		$dataset['count'] = $data;
 		$dataset['labels'] = ['minoritas', 'mayoritas'];
 
-		// print_r($dataset);
 
 		$this->load->view('templates/header', $dataset);
 		$this->load->view('templates/aside');
@@ -36,8 +33,10 @@ class Smote extends CI_Controller
 	}
 	public function resamplingdata()
 	{
+		$this->load->model('M_Smote');
+
 		$this->M_Smote->smote(19, 200, M_Smote::kVal);
-		// echo count($this->M_Smote->getMinorityData());
+
 		$dataset['judul'] = 'resampling data';
 		$dataset = $this->M_Smote->getsampleddata();
 
@@ -52,10 +51,22 @@ class Smote extends CI_Controller
 
 	public function savedata()
 	{
+		$this->load->model('M_Smote');
+		$this->M_Smote->smote(19, 200, M_Smote::kVal);
 		$this->M_Smote->savedata();
+
+		redirect('smote/datatraining');
 	}
 	function datatraining()
 	{
-		echo "hei";
+		$this->load->model('M_Smote');
+		echo "<pre>";
+		print_r($this->M_Smote->getAll());
+		echo "</pre>";
+	}
+	function hapusdata()
+	{
+		$this->db->query('TRUNCATE kasus');
+		redirect('smote');
 	}
 }

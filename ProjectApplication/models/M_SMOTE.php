@@ -195,20 +195,21 @@ class M_Smote extends CI_Model
 				array_push($syntheticTemp, $result);
 			}
 
-			// echo "<pre>";
-			// 	print_r($syntheticTemp);
-			// echo "</pre>";
+			
 			array_push(self::$syntheticData, $syntheticTemp);
 			$syntheticTemp = [];
 			$percentage--;
 		}
 	}
 
-	private function diskritVal()
+	private function diskritVal($datas)
 	{
-		$arrayOfLabel = ['sex', 'age', 'time', 'number_of_warts', 'type', 'area', 'induration_diameter', 'result_of_treatement'];
+		$arrayOfLabel = ['sex', 'age', 'time', 'number_of_warts', 'type', 'area', 'induration_diameter', 'result_of_treatment', 'data_type'];
 		$diskretVal = [];
-		foreach (self::$syntheticData as $key => $singleTuple) {
+
+
+
+		foreach ($datas as $key => $singleTuple) {
 			foreach ($singleTuple as $index => $tuple) {
 				switch ($index) {
 					case 0:
@@ -238,15 +239,21 @@ class M_Smote extends CI_Model
 					case 7:
 						if ($tuple == 0) {
 							$diskretVal[$arrayOfLabel[$index]] = 'fail';
+							echo "fail\n";
 						} else {
-							$diskretVal[$arrayOfLabel[$index]] = 'success/5';
+							$diskretVal[$arrayOfLabel[$index]] = 'success';
+							echo "success\n";
 						}
-
+						break;
+					case 8:
+						$diskretVal[$arrayOfLabel[$index]] = $tuple;
+						break;
 					default:
-						# code...
+
 						break;
 				}
 			}
+			
 			array_push(self::$diskretData, $diskretVal);
 		}
 		$diskretVal = [];
@@ -269,29 +276,65 @@ class M_Smote extends CI_Model
 		return $data;
 	}
 
+	public function getAll()
+	{
+		$data = $this->db->get('kasus')->result_array();
+		return $data;
+	}
+	function addDataType($datas, $label, $iteration)
+	{
+		for ($i = 0; $i < $iteration; $i++) {
+			$datas[$i][count($datas[$i])] = $label;
+		}
+
+		shuffle($datas);
+		return $datas;
+	}
+	function mergeData()
+	{
+		self::$allData = array_merge($this->dataset, $this->majoritydata);
+
+		self::$allData = $this->addDataType(self::$allData, 'original data', count(self::$allData));
+
+		self::$syntheticData = $this->addDataType(self::$syntheticData, 'synthetic data', count(self::$syntheticData));
+		self::$allData = array_merge(self::$allData, self::$syntheticData);
+	}
 	function getsampleddata()
 	{
-		// $totalDataSet = [];
 		$this->roundingVal();
-		$this->diskritVal();
-		self::$allData = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
-		shuffle(self::$allData);
+		$this->mergeData();
+		// $this->diskritVal();
 		$dataset['dataset'] = self::$allData;
 		$data[0] = count(array_merge($this->dataset, self::$syntheticData));
 		$data[1] = count($this->majoritydata);
 		$dataset['count'] = $data;
+		$this->getAll();
 		return $dataset;
 	}
 
 	function savedata()
 	{
+		$this->roundingVal();
+		$this->mergeData();
+		$this->diskritVal(self::$allData);
+		shuffle(self::$diskretData);
+		echo count(self::$diskretData);
 
-		// $totalDataSet = shuffle($totalDataSet);
-
-
-		echo "<pre>";
-		print_r(self::$allData);
-		echo "</pre>";
-		// self::$allData = array_merge($this->dataset, $this->majoritydata, self::$syntheticData);
+		foreach (self::$diskretData as $key => $data) {
+			$insert = [
+				'id' => '',
+				'sex' => $data['sex'],
+				'age' => $data['age'],
+				'time' => $data['time'],
+				'number_of_warts' => $data['number_of_warts'],
+				'type' => $data['type'],
+				'area' => $data['area'],
+				'induration_diameter' => $data['induration_diameter'],
+				'result_of_treatment' => $data['result_of_treatment'],
+				'data_type' => $data['data_type'],
+				'data_status' => ''
+			];
+			$this->db->insert('kasus', $insert);
+		}
 	}
 }

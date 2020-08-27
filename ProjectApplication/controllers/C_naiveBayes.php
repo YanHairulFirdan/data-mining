@@ -199,23 +199,6 @@ class C_naiveBayes extends CI_Controller
         $this->load->view('templates/footer');
     }
 
-    // function continuousdata(){
-    //     $arr = [1,2,3,4];
-    //     $num = [ 850, 1100, 1150, 1250, 750, 900];
-
-    //     echo array_sum($num)."<br>";
-    //     $mean = array_sum($arr)/count($arr);
-    //     $n = count($arr);
-    //     // $std_deviation = stats_variance($arr);
-    //     $temp  = 0;
-    //     foreach ($arr as $i) {
-    //         $temp += pow(($i - $mean), 2);
-    //     }
-    //     $std_deviation = sqrt(($temp/$n));
-    //     echo $mean;
-    //     echo "<br>";
-    //     echo $std_deviation;
-    // }
 
     function logout()
     {
