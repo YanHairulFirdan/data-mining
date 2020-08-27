@@ -19,27 +19,45 @@
 					</tr>
 				</thead>
 				<tbody>
-					<?php foreach ($dataset as $key => $value) : ?>
-						<tr>
-							<td class="text-center"><?= $key + 1 ?></td>
-							<td class="text-center"><?= $value[0] ?></td>
-							<td class="text-center"><?= $value[1] ?></td>
-							<td class="text-center"><?= $value[2] ?></td>
-							<td class="text-center"><?= $value[3] ?></td>
-							<td class="text-center"><?= $value[4] ?></td>
-							<td class="text-center"><?= $value[5] ?></td>
-							<td class="text-center"><?= $value[6] ?></td>
-							<td class="text-center"><?= $value[7] ?></td>
-						</tr>
-					<?php endforeach ?>
+					<?php
+					// echo "<pre>";
+					// print_r($dataset);
+					// echo "</pre>";
+					// die;
+					?>
+					<?php if ($this->session->flashdata('data_type') == 'data training') : ?>
+						<?php foreach ($dataset as $key => $value) : ?>
+							<tr>
+								<td class="text-center"><?= $key + 1 ?></td>
+								<td class="text-center"><?= $value['sex'] ?></td>
+								<td class="text-center"><?= $value['age'] ?></td>
+								<td class="text-center"><?= $value['time'] ?></td>
+								<td class="text-center"><?= $value['number_of_warts'] ?></td>
+								<td class="text-center"><?= $value['type'] ?></td>
+								<td class="text-center"><?= $value['area'] ?></td>
+								<td class="text-center"><?= $value['induration_diameter'] ?></td>
+								<td class="text-center"><?= $value['result_of_treatment'] ?></td>
+							</tr>
+						<?php endforeach ?>
+					<?php else : ?>
+						<?php foreach ($dataset as $key => $value) : ?>
+							<tr>
+								<td class="text-center"><?= $key + 1 ?></td>
+								<td class="text-center"><?= $value[0] ?></td>
+								<td class="text-center"><?= $value[1] ?></td>
+								<td class="text-center"><?= $value[2] ?></td>
+								<td class="text-center"><?= $value[3] ?></td>
+								<td class="text-center"><?= $value[4] ?></td>
+								<td class="text-center"><?= $value[5] ?></td>
+								<td class="text-center"><?= $value[6] ?></td>
+								<td class="text-center"><?= $value[7] ?></td>
+							</tr>
+						<?php endforeach ?>
+					<?php endif; ?>
 				</tbody>
 			</table>
 
 		</div>
-
-
-		<br>
-		<br>
 		<br>
 		<br>
 	</div>
@@ -61,9 +79,9 @@
 		</div>
 	</div>
 </div>
+<?php if (!$this->session->flashdata('data_type')) : ?>?>
 <script>
 	var ctx = document.getElementById("canvas").getContext('2d');
-	var show = false;
 	let labels = ['minoritas', 'mayoritas'];
 	var myChart = new Chart(ctx, {
 		type: 'bar',
@@ -101,19 +119,21 @@
 			}
 		}
 	});
+</script>
+<?php endif; ?>
+<script>
+	var show = false;
 
 	let tglbutton = document.querySelector("#tgl-btn");
 	tglbutton.addEventListener('click', function() {
 		var tableContainer = document.querySelector('.table-wrapper');
 		let tglbutton = document.querySelector("#tgl-btn");
-		// var show = false;
-
 		if (!show) {
 			tableContainer.style.maxHeight = 'fit-content';
 			tglbutton.innerText = 'Tampilkan Sedikit'
 			show = !show;
 			console.log('click')
-		} else {
+		} else if (show) {
 			tableContainer.style.maxHeight = '20em';
 			tglbutton.innerText = 'Tampilkan Banyak'
 			show = !show;
@@ -139,6 +159,8 @@
 
 		}
 
+
+		console.log("status".show)
 		// $('#tgl-btn').click(function() {
 		// 	$('.table-wrapper').animate({
 		// 		height: 'fit-content'
