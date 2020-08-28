@@ -70,6 +70,8 @@
 			<?php else : ?>
 				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a>
 			<?php endif; ?>
+		<?php elseif ($this->session->flashdata('train_msg')) : ?>
+			<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/c_naivebayes/classification">mulai klasifikasi</a>
 		<?php endif; ?>
 	</div>
 	<div class="row mt-5">

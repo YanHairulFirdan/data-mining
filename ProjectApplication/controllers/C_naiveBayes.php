@@ -8,6 +8,7 @@ class C_naiveBayes extends CI_Controller
         $this->load->model("M_NaiveBayes");
         $this->load->helper('perhitungan_helper');
         $this->load->library('form_validation', 'graph');
+        $this->session->unset_userdata('msg');
     }
 
     function index()
@@ -189,9 +190,6 @@ class C_naiveBayes extends CI_Controller
     {
         $data["data"] = $this->M_NaiveBayes->getDataAPI();
         $data['currentTime'] = time();
-        // echo "<pre>";
-        // print_r($data);
-        // echo "</pre>";
         $data['judul'] = "landing page";
         $this->load->view('templates/header', $data);
         $this->load->view('templates/aside');
@@ -199,6 +197,21 @@ class C_naiveBayes extends CI_Controller
         $this->load->view('templates/footer');
     }
 
+
+
+    public function training()
+    {
+        $this->load->model('m_smote');
+        $dataset['dataset'] = $this->m_smote->getAll();
+        $dataset['judul'] = 'Data training';
+        $dataset['header'] = 'Data training';
+        $this->session->set_flashdata('data_type', 'data training');
+        $this->session->set_flashdata('train_msg', 'klasifikasi');
+        $this->load->view('templates/header', $dataset);
+        $this->load->view('templates/aside');
+        $this->load->view('smote/index', $dataset);
+        $this->load->view('templates/footer', $dataset);
+    }
 
     function logout()
     {

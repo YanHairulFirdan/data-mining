@@ -8,6 +8,7 @@ class Smote extends CI_Controller
 		if ($this->session->userdata('login') != 'ok') {
 			redirect(site_url('./user/login'));
 		}
+		$this->session->unset_userdata('train_msg');
 	}
 	public function index()
 	{
@@ -49,7 +50,7 @@ class Smote extends CI_Controller
 		$this->load->model('M_Smote');
 		$this->M_Smote->smote(19, 200, M_Smote::kVal);
 		$this->M_Smote->savedata();
-		redirect('smote/datatraining');
+		redirect('c_naivebayes/training');
 	}
 	function datatraining()
 	{
@@ -68,5 +69,13 @@ class Smote extends CI_Controller
 	{
 		$this->db->query('TRUNCATE kasus');
 		redirect('smote');
+	}
+
+
+	public function splitData()
+	{
+		$this->load->model('M_Smote');
+		$this->M_Smote->testSplitData();
+		redirect('c_naivebayes/training');
 	}
 }

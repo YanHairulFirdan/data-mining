@@ -195,7 +195,7 @@ class M_Smote extends CI_Model
 				array_push($syntheticTemp, $result);
 			}
 
-			
+
 			array_push(self::$syntheticData, $syntheticTemp);
 			$syntheticTemp = [];
 			$percentage--;
@@ -253,7 +253,7 @@ class M_Smote extends CI_Model
 						break;
 				}
 			}
-			
+
 			array_push(self::$diskretData, $diskretVal);
 		}
 		$diskretVal = [];
@@ -335,6 +335,31 @@ class M_Smote extends CI_Model
 				'data_status' => ''
 			];
 			$this->db->insert('kasus', $insert);
+		}
+	}
+	function testSplitData()
+	{
+		// $this->db->where(['data_type' => 'original data']);
+		$dataset = $this->db->get('kasus')->result_array();
+		$this->load->library('crossvalidation');
+		$this->crossvalidation->setKfold(5);
+		$dataset = $this->crossvalidation->splitData($dataset);
+		// simpan data ke dalam data base dan update nilai data type
+		foreach ($dataset as $key => $value) {
+			// echo count($value) . "<br>";
+			if ($key == 0) {
+				foreach ($value as $key => $data) {
+					$data_status  = ['data_status' => 'testing'];
+					$this->db->where(['id' => $data['id']]);
+					$this->db->update('kasus', $data_status);
+				}
+			} else {
+				foreach ($value as $key => $data) {
+					$data_status  = ['data_status' => 'training'];
+					$this->db->where(['id' => $data['id']]);
+					$this->db->update('kasus', $data_status);
+				}
+			}
 		}
 	}
 }
