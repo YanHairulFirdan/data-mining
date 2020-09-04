@@ -67,18 +67,39 @@
 			<?php if ($this->session->flashdata('msg') == 'simpan data') : ?>
 				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/savedata">simpan data</a>
 				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/datatraining">data training</a>
-			<?php else : ?>
-				<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a>
 			<?php endif; ?>
 		<?php elseif ($this->session->flashdata('train_msg')) : ?>
 			<a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/c_naivebayes/classification">mulai klasifikasi</a>
 		<?php endif; ?>
 	</div>
 	<div class="row mt-5">
-		<div class="col-md-12">
+		<div class="col-md-8">
 			<canvas id="canvas" width="500" height="200"></canvas>
 			<script type="text/javascript" src="<?= base_url(); ?>asset/js/Chart.js"></script>
 		</div>
+
+		<?php if ($this->session->flashdata('msg') == 'sampled') : ?>
+			<div class="col-md-4">
+				<h3 class="text-center mb-1 text-bold">Form sampling</h3>
+				<form method="POST" action="<?= site_url(); ?>/smote/resamplingdata">
+					<div class=" form-group">
+						<label for="persentase">Jumlah Sampling</label>
+						<input type="number" name="persentase" class="form-control" id="persentase" aria-describedby="emailHelp" placeholder="e.x 100">
+					</div>
+					<div class="form-group">
+						<label for="knn">jumlah k nearest neigbor</label>
+						<input type="number" name="knn" class="form-control" id="knn" placeholder="ex.5">
+					</div>
+					<div class="form-group">
+						<label for="kfold">jumlah k-fold</label>
+						<input type="number" name="kfold" class="form-control" id="kfold" placeholder="ex.5">
+					</div>
+					<button type="submit" class="btn btn-primary">mulai sampling data</button>
+					<!-- <a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a> -->
+
+				</form>
+			</div>
+		<?php endif; ?>
 	</div>
 </div>
 <?php if (!$this->session->flashdata('data_type')) : ?>?>

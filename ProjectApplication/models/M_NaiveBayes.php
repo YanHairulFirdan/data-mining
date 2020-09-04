@@ -2,6 +2,10 @@
 
 class M_NaiveBayes extends CI_Model
 {
+
+    public $numericData = ['age', 'time', 'number_of_warts', 'area', 'induration_diameter'];
+    public $conditions = ['success', 'fail'];
+    public $columName  = ['mean', 'std_deviation'];
     function dataForm()
     {
         $namaProduk = [
@@ -432,7 +436,208 @@ class M_NaiveBayes extends CI_Model
     {
         // looping for k = 5 times
     }
-    function classification()
+    function classification($mode)
     {
+        $this->db->query("TRUNCATE posterior");
+        $dataset = $this->splitData($mode);
+        // echo "<pre>";
+        // print_r($dataset);
+        // echo "</pre>";
+        $dataInsert = [];
+        $likehood = ["success" => 1, "fail" => 1];
+        $occurance = ["success" => 1, "fail" => 1];
+        // $likehoodNo = 0.0;
+
+        for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
+
+
+            foreach ($dataset[$i] as $key => $value) {
+                $data_status  = ['data_status' => 'testing'];
+                $this->db->where(['id' => $value['id']]);
+                $this->db->update('kasus', $data_status);
+            }
+            // die;
+            // get mean and standard deviation for each attributes in each results
+            // foreach ($this->numericData as $key => $value) {
+            //     echo "atribut " . $value . br();
+            //     $dataInsert['id_data'] = $i;
+            //     $dataInsert['attribute_name'] = $value;
+            //     foreach ($this->conditions as $count => $cond) {
+            //         $condition = ['data_status' => 'testing', 'result_of_treatment' => $cond];
+            //         $this->db->select_avg($value);
+            //         $mean = $this->db->get_where('kasus', $condition)->result_array();
+            //         $dataInsert['mean' . $cond] = $mean[0][$value];
+            //         $this->db->select($value);
+            //         $arr =  $this->db->get_where('kasus', $condition)->result_array();
+            //         $wrapperArr = [];
+            //         foreach ($arr as $a) {
+            //             array_push($wrapperArr, $a[$value]);
+            //         }
+            //         $dataInsert['std_deviation' . $cond] = $this->standard_deviation($wrapperArr);
+
+            //         $wrapperArr = [];
+            //     }
+            //     $this->db->insert('mean_and_stdeviation', $dataInsert);
+            //     $dataInsert = [];
+            // }
+
+            $dataInsert = [];
+            $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+            $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
+            $mean['success'] = $this->db->get('kasus')->result_array();
+
+            $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+            $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
+            $mean['fail'] = $this->db->get('kasus')->result_array();
+
+            foreach ($this->numericData as $key => $numeric) {
+                // calculate mean and standard deviation
+                $dataInsert['attribute_name'] = $numeric;
+                foreach ($this->conditions as $key => $condition) {
+                    // get mean
+                    $this->db->select($numeric);
+                    $arr = $this->db->get_where('kasus', ['result_of_treatment' => $condition])->result_array();
+                    $std = $this->standard_deviation($arr);
+                    $dataInsert['mean' . $condition] = $mean[$condition][0][$numeric];
+                    // echo $mean[$condition][0][$numeric] . br();
+                    $dataInsert['std_deviation' . $condition] = $std;
+                }
+                // die;
+                $this->db->insert('mean_and_stdeviation', $dataInsert);
+                $dataInsert = [];
+            }
+            // die;
+            // looping through dataset-i
+            foreach ($dataset[$i] as $keys => $data) {
+                $this->posteriorCalculation($data, $i);
+            }
+
+            $this->db->where(['data_status' => 'testing']);
+            $this->db->update('kasus', ['data_status' => '']);
+            $this->db->query("TRUNCATE mean_and_stdeviation");
+            // die;
+        }
+    }
+
+
+    public function posteriorCalculation($data, $iteration)
+    {
+
+        $dataInsert = [];
+
+        // $this->;
+        $posterior = [
+            'success' => 1,
+            'fail' => 1
+        ];
+
+
+
+        // print_r($data);
+        // die;
+        foreach ($data as $keyattr => $attribute) {
+            // echo "atribute = " . $keyattr . br();
+            if (($keyattr != 'id') && ($keyattr != 'result_of_treatment') && ($keyattr != 'data_type') && ($keyattr != 'data_status')) {
+                foreach ($this->conditions as $key => $condition) {
+                    if (in_array($keyattr, $this->numericData)) {
+                        $conds = ['attribute_name' => $keyattr];
+                        $this->db->select('' . $this->columName[0] . $condition . ',' . $this->columName[1] . $condition . '');
+                        $mean_std = $this->db->get_where('mean_and_stdeviation', $conds)->result_array();
+                        $mean = $mean_std[0][$this->columName[0] . $condition];
+                        $std = $mean_std[0][$this->columName[1] . $condition];
+                        $gaussianDstr = $this->gaussianDistribution($attribute, $mean, $std);
+                        $posterior[$condition] *= $gaussianDstr;
+                    } else {
+                        $totalOccurance = $this->db->where([$keyattr => $attribute])->from('kasus')->count_all_results();
+                        $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition])->from('kasus')->count_all_results();
+                        $posterior[$condition] *= $occurance[$condition] / $totalOccurance;
+                    }
+                }
+            } else {
+                continue;
+            }
+        }
+
+        $datas['id'] =  '';
+        $datas['iteration'] =  $iteration;
+        $datas['posteriorsuccess'] =  $posterior['success'];
+        $datas['posteriorfail'] =  $posterior['fail'];
+        $datas['result'] =  ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail';
+        $datas['real_result'] =  $data['result_of_treatment'];
+        $this->db->insert('posterior', $datas);
+
+        // else
+        // get the probability of the attribute's occurance
+        // insert into table prior 
+    }
+    function standard_deviation($arr)
+    {
+
+        $meanPow = 0;
+
+        // die;
+        $numberofItems = count($arr);
+        // $meanPow = pow((array_sum($arr) / $numberofItems), 2);
+        foreach ($arr as $key => $a) {
+            foreach ($a as $key => $val) {
+                $meanPow += $val;
+            }
+        }
+        $meanPow = $meanPow / $numberofItems;
+        $meanPow = pow($meanPow, 2);
+        // echo  pow((array_sum($arr) / $numberofItems), 2) . br();
+        $totalPow = 0;
+        foreach ($arr as $a) {
+            foreach ($a as $key => $value) {
+                $totalPow += pow($value, 2);
+            }
+        }
+        $variance = ((1 / $numberofItems) * $totalPow) - $meanPow;
+        $standard_deviation = sqrt($variance);
+        return $standard_deviation;
+    }
+
+
+    public function gaussianDistribution($xi, $mean, $standard_deviation)
+    {
+        $pi = pi();
+        // echo "xi : " . $xi . br();
+        // echo "mean : " . $mean . br();
+        // echo "standard deviation : " . $standard_deviation . br();
+        // $div = (1 / ($standard_deviation * sqrt(2 * $pi))); // acyually using this to replace 2.506
+        $div = (1 / ($standard_deviation * sqrt(2 * $pi))); // acyually using this to replace 2.506
+        // echo "div = " . $div . br();
+        $exp = - (pow(($xi - $mean), 2) / (2 * pow($standard_deviation, 2)));
+        $topDiv = - (pow(($xi - $mean), 2));
+        // echo "top div " . $topDiv . br();
+        // echo "exp = " . $exp . br();
+        $bottomDiv = 2 * pow($standard_deviation, 2);
+        // echo "bottom div " . $bottomDiv . br();
+        $gaussian = $div * exp(($topDiv / $bottomDiv));
+        // $gaussian = $div * pow(2.718, ($substraction / $bottomDiv));
+        // $gaussian = (1 / $standard_deviation * 2.506) * exp((((pow(($xi - $mean), 2)) / (2 * pow($standard_deviation, 2)))));
+        $gaussian = ($gaussian);
+        return $gaussian;
+    }
+
+    function splitData($mode)
+    {
+
+        if ($mode == 'real') {
+            $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
+            $dataset = $this->db->get()->result_array();
+        } else if ($mode == 'resampled') {
+            $dataset = $this->db->get('kasus')->result_array();
+        }
+
+        // $this->db->where(['data_type' => 'original data']);
+        // $dataset = $this->db->get('kasus')->count_all_results();
+
+
+
+        $this->load->library('crossvalidation');
+        $this->crossvalidation->setKfold($this->session->userdata('kfold'));
+        $dataset = $this->crossvalidation->splitData($dataset);
+        return $dataset;
     }
 }

@@ -197,6 +197,17 @@ class C_naiveBayes extends CI_Controller
         $this->load->view('templates/footer');
     }
 
+    public function classificationreal()
+    {
+        $this->M_NaiveBayes->classification('real');
+        redirect('confusionmatrix/');
+    }
+    public function classificationresampled()
+    {
+        $this->M_NaiveBayes->classification('resampled');
+        redirect('confusionmatrix/');
+    }
+
 
 
     public function training()
@@ -218,5 +229,30 @@ class C_naiveBayes extends CI_Controller
         $this->session->unset_userdata('login');
         $this->session->unset_userdata('admin');
         redirect(site_url('user/login'));
+    }
+
+
+    public function teststdDV()
+    {
+        // echo $this->M_NaiveBayes->standard_deviation([30, 36, 47, 50, 52, 52, 56, 60, 63, 70, 70, 110]);
+        // echo "<pre>";
+        // $angka . "1" = 1;
+        // echo $this->M_NaiveBayes->gaussianDistribution(100000, 68386.66, 42397.5);
+        // echo "</pre>";
+    }
+
+
+    public function posterior()
+    {
+        $this->db->query('TRUNCATE mean_and_stdeviation');
+        $data = $this->db->get_where('kasus', ['id' => 138])->result_array();
+
+        // print_r($data);
+        $this->M_NaiveBayes->posteriorCalculation($data);
+    }
+
+    public function teststd()
+    {
+        echo $this->session->userdata('kfold');
     }
 }

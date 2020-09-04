@@ -12,11 +12,16 @@ class CrossValidation
     function setKfold($k)
     {
         $this->kFold = $k;
+        echo gettype($k);
+        // die;
     }
     public function splitData($dataset)
     {
+        // shuffle($dataset);
         $splitedData = [];
         if (count($dataset) % $this->kFold == 0) {
+            echo "it is even division" . "<br>";
+            echo count($dataset) / $this->kFold . "<br>";
             $numberofitem = count($dataset) / $this->kFold;
             $splitedData = $this->pushData($dataset, $numberofitem);
         } else {
