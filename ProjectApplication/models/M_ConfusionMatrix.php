@@ -5,7 +5,9 @@ class M_ConfusionMatrix extends CI_Model
     {
         $dataSet = $this->db->get('posterior')->result_array();
         $dataSplitted = [];
-
+        // echo "<pre>";
+        // print_r($dataSet);
+        // echo "</pre>";
         for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
             foreach ($dataSet as $key => $data) {
 
@@ -18,6 +20,9 @@ class M_ConfusionMatrix extends CI_Model
             }
         }
 
+        // echo "<pre>";
+        // print_r($dataSplitted);
+        // echo "</pre>";
         return $dataSplitted;
     }
 
@@ -28,19 +33,20 @@ class M_ConfusionMatrix extends CI_Model
         $tp = $tn = $fp = $fn = 0;
         $count = 0;
         $performances = [];
+        $avgaccuracy = 0.0;
 
         foreach ($dataset as $keys => $tuples) {
             // echo "performance dari k-" . $key . br();
             foreach ($tuples as $key => $data) {
 
                 if ($data['real_result'] == 'success' && $data['result'] == 'success') {
-                    $tp++;
-                } else if ($data['real_result'] == 'fail' && $data['result'] == 'fail') {
                     $tn++;
+                } else if ($data['real_result'] == 'fail' && $data['result'] == 'fail') {
+                    $tp++;
                 } elseif ($data['real_result'] == 'success' && $data['result'] == 'fail') {
-                    $fn++;
-                } elseif ($data['real_result'] == 'fail' && $data['result'] == 'success') {
                     $fp++;
+                } elseif ($data['real_result'] == 'fail' && $data['result'] == 'success') {
+                    $fn++;
                 }
             }
 
@@ -52,19 +58,20 @@ class M_ConfusionMatrix extends CI_Model
             // echo "true negative = " . $tn . br();
             // echo "false positive = " . $fp . br();
             // echo "false negative = " . $fn . br();
-            $accuracy = ($tp + $tn) / ($tp + $tn + $fp + $fn);
-            $precision = $tp / ($tp + $fp);
-            $recall = $tp / ($tp + $fn);
+            $bottomDivAccr = (($tp + $tn + $fp + $fn) == 0) ? 1 : ($tp + $tn + $fp + $fn);
+            $bottomDivPre = (($tp + $fp) == 0) ? 1 : ($tp + $fp);
+            $bottomDivRec = (($tp + $fn) == 0) ? 1 : ($tp + $fn);
+            $accuracy = ($tp + $tn) / $bottomDivAccr;
+            $precision = $tp / $bottomDivPre;
+            $recall = $tp / $bottomDivRec;
             $performances[$keys]['tp'] = $tp;
             $performances[$keys]['fn'] = $fn;
             $performances[$keys]['tn'] = $tn;
             $performances[$keys]['fp'] = $fp;
             $performances[$keys]['accuracy'] = $accuracy;
-            $performances[$keys]['precison'] = $precision;
+            $performances[$keys]['precision'] = $precision;
             $performances[$keys]['recall'] = $recall;
-            echo "akurasi = " . $accuracy * 100 . br();
-            echo "precision = " . $precision * 100 . br();
-            echo "recall = " . $recall * 100 . br();
+            $avgaccuracy += $accuracy;
             $tp = $tn = $fp = $fn = 0;
 
 
@@ -75,6 +82,9 @@ class M_ConfusionMatrix extends CI_Model
         // print_r($performances);
         // echo "</pre>";
 
+
+        $avgaccuracy /= $this->session->userdata('kfold');
+        $performances['avgAccuracy'] = $avgaccuracy;
         return $performances;
     }
 }

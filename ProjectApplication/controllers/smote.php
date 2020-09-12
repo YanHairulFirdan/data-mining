@@ -107,4 +107,16 @@ class Smote extends CI_Controller
 		print_r($this->session->userdata('kfold'));
 		echo "</pre>";
 	}
+
+	public function insert()
+	{
+		$this->db->query('TRUNCATE kasusrealdata');
+		$this->M_Smote->inputData();
+		redirect('smote');
+	}
+
+	function testSmote()
+	{
+		$this->M_Smote->smote(5, 200, 2);
+	}
 }

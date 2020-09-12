@@ -20,7 +20,7 @@ class CrossValidation
         // shuffle($dataset);
         $splitedData = [];
         if (count($dataset) % $this->kFold == 0) {
-            echo "it is even division" . "<br>";
+            // echo "it is even division" . "<br>";
             echo count($dataset) / $this->kFold . "<br>";
             $numberofitem = count($dataset) / $this->kFold;
             $splitedData = $this->pushData($dataset, $numberofitem);

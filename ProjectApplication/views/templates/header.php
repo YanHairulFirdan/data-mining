@@ -8,8 +8,8 @@
     <!-- Tell the browser to be responsive to screen width -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Font Awesome -->
+    <link rel="stylesheet" href="<?= base_url('assets/templates/back/plugins/fontawesome-free/css/style.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/templates/back/') ?>plugins/fontawesome-free/css/all.min.css">
-    <link rel="stylesheet" href="<?= base_url('assets/templates/back/') ?>plugins/fontawesome-free/css/style.css">
     <!-- <link rel="stylesheet" href="<?= base_url('assets/css/') ?>style.css"> -->
     <!-- Ionicons -->
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -30,6 +30,19 @@
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <style>
+        #formconfig {}
+
+        #formconfig {
+            background-color: #fff;
+            display: none;
+            position: absolute;
+            /* left: auto; */
+            right: 0em;
+            z-index: 999;
+            width: 10em;
+        }
+    </style>
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed" ng-app="myApp" ng-controller="myCtrl">
@@ -154,6 +167,23 @@
                         <i class="fas fa-th-large"></i>
                     </a>
                 </li> -->
+                <li class="nav-item">
+                    <i class="fas fa-cog" id="config-btn"></i>
+                    <div class="card p-4" id="formconfig">
+                        <div>
+                            <form method="post" action="http://localhost:8080/Ci3_project/indexProject.php/c_naivebayes/changekfold">
+                                <div class="form-group">
+                                    <label for="kfold">ubah nilai k-fold</label>
+                                    <input type="number" class="form-control" id="newkfold" placeholder="masukkan nilai k-fold" name="newkfold" value="">
+                                </div>
+                                <button type="submit" id="kfoldbtn" class="btn btn-primary ml-auto">ubah</button>
+                            </form>
+                        </div>
+                    </div>
+                </li>
             </ul>
         </nav>
+
+        <div class="alert-box">
+        </div>
         <!-- /.navbar -->

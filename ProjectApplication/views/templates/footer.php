@@ -18,6 +18,8 @@
 <script src="<?= base_url('assets/templates/back/') ?>plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->
 <script src="<?= base_url('assets/templates/back/') ?>plugins/jquery-ui/jquery-ui.min.js"></script>
+<script src="<?= base_url('assets/templates/back/js/script.js') ?>"></script>
+
 <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
 <script>
     $.widget.bridge('uibutton', $.ui.button)

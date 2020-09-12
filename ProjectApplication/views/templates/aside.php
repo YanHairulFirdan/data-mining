@@ -76,19 +76,19 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url() ?>/c_naivebayes/homedata" class="nav-link">
+          <a href="<?= site_url() ?>/smote" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
-              Data Training
+              Resampling Data
               <!-- <span class="right badge badge-danger">New</span> -->
             </p>
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url() ?>/c_naivebayes/prediksi" class="nav-link">
+          <a href="<?= site_url() ?>/c_naivebayes/classificationtest" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
-              Halaman Prediksi
+              Input data training
               <!-- <span class="right badge badge-danger">New</span> -->
             </p>
           </a>

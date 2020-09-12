@@ -3,6 +3,12 @@
 class M_NaiveBayes extends CI_Model
 {
 
+    public function __construct()
+    {
+        parent::__construct();
+        $this->load->library('crossvalidation');
+    }
+
     public $numericData = ['age', 'time', 'number_of_warts', 'area', 'induration_diameter'];
     public $conditions = ['success', 'fail'];
     public $columName  = ['mean', 'std_deviation'];
@@ -157,18 +163,18 @@ class M_NaiveBayes extends CI_Model
 
     }
     // get data prediksi for data penjualan
-    function getDataPrediksiPenjualan()
-    {
-        $this->insertTablePerhitungan();
-        // data tabel perhitungan
-        $data['dataTabelPrediksi'] = $this->db->get('perhitungan')->result_array();
+    // function getDataPrediksiPenjualan()
+    // {
+    //     $this->insertTablePerhitungan();
+    //     // data tabel perhitungan
+    //     $data['dataTabelPrediksi'] = $this->db->get('perhitungan')->result_array();
 
-        //data hasil prediksi
-        $data['hslPrediksi'] = $this->hasilPrediksiData();
+    //     //data hasil prediksi
+    //     $data['hslPrediksi'] = $this->hasilPrediksiData();
 
 
-        return $data;
-    }
+    //     return $data;
+    // }
 
 
     //prediksi untuk data percobaan
@@ -214,29 +220,29 @@ class M_NaiveBayes extends CI_Model
 
 
     // hasil prediksi untuk data penjualan
-    function hasilPrediksiData()
-    {
-        $query = $this->db->query('SELECT * FROM datapenjualan');
-        $jumahTotalKasus =  $query->num_rows();
-        $totalYes = $this->db->where(["status" => "laris"])->from('datapenjualan')->count_all_results();
-        $totalNo = $this->db->where(["status" => "tidak laris"])->from('datapenjualan')->count_all_results();
-        $totalKasus = $this->db->get('datapenjualan')->num_rows('datapenjualan');
-        $this->db->select('jumlahKasus, probabilitasYes, probabilitasNo');
-        $data['prediksi'] = $this->db->get('perhitungan');
-        $resultYes = 1;
-        $resultNo = 1;
-        foreach ($data['prediksi']->result_array() as $dataPrediksi) {
-            $resultYes *= $dataPrediksi['probabilitasYes'];
-            $resultNo *= $dataPrediksi['probabilitasNo'];
-        }
-        $prediksiYes = ($resultYes > 0) ? $resultYes * ($totalYes / $totalKasus) : 0;
-        $prediksiNo = ($resultNo > 0) ? $resultNo * ($totalNo / $totalKasus) : 0;
+    // function hasilPrediksiData()
+    // {
+    //     $query = $this->db->query('SELECT * FROM datapenjualan');
+    //     $jumahTotalKasus =  $query->num_rows();
+    //     $totalYes = $this->db->where(["status" => "laris"])->from('datapenjualan')->count_all_results();
+    //     $totalNo = $this->db->where(["status" => "tidak laris"])->from('datapenjualan')->count_all_results();
+    //     $totalKasus = $this->db->get('datapenjualan')->num_rows('datapenjualan');
+    //     $this->db->select('jumlahKasus, probabilitasYes, probabilitasNo');
+    //     $data['prediksi'] = $this->db->get('perhitungan');
+    //     $resultYes = 1;
+    //     $resultNo = 1;
+    //     foreach ($data['prediksi']->result_array() as $dataPrediksi) {
+    //         $resultYes *= $dataPrediksi['probabilitasYes'];
+    //         $resultNo *= $dataPrediksi['probabilitasNo'];
+    //     }
+    //     $prediksiYes = ($resultYes > 0) ? $resultYes * ($totalYes / $totalKasus) : 0;
+    //     $prediksiNo = ($resultNo > 0) ? $resultNo * ($totalNo / $totalKasus) : 0;
 
 
-        $keterangan = ($prediksiYes > $prediksiNo) ? "status = Laris " : "Status = tidak Laris ";
-        $data['prediksi'] = ["jumlahTotalKasus" => $jumahTotalKasus, "totalYes" => $totalYes, "totalNo" => $totalNo, "resultYes" => $resultYes, "resultNo" => $resultNo, "prediksiYes" => $prediksiYes, "prediksiNo" => $prediksiNo, "keterangan" => $keterangan];
-        return $data;
-    }
+    //     $keterangan = ($prediksiYes > $prediksiNo) ? "status = Laris " : "Status = tidak Laris ";
+    //     $data['prediksi'] = ["jumlahTotalKasus" => $jumahTotalKasus, "totalYes" => $totalYes, "totalNo" => $totalNo, "resultYes" => $resultYes, "resultNo" => $resultNo, "prediksiYes" => $prediksiYes, "prediksiNo" => $prediksiNo, "keterangan" => $keterangan];
+    //     return $data;
+    // }
 
 
     function singleData($id)
@@ -247,78 +253,78 @@ class M_NaiveBayes extends CI_Model
 
 
     // function for real case untuk memasukkan jumlah probabilitas 
-    function insertTablePerhitungan()
-    {
+    // function insertTablePerhitungan()
+    // {
 
-        $daftarAtribut = $this->db->select('namaatribut')->from('daftaratributprediksi')->get()->result_array();
-        foreach ($daftarAtribut as $namaatribut) {
-            $namaKolom = $namaatribut['namaatribut'];
-            //mendapatkan jumlah total kasus dari setiap atribut
-            // $totalKasus = $this->db->where();
-            //for debugging purpose
-            // echo "<pre>";
-            // print_r($namaKolom);
-            // echo "</pre>";
-            // end of debugging
-            foreach ($this->input->post() as $index => $dataForm) {
-                $totalKasus = $this->db->where([$namaKolom => $dataForm])->from('datapenjualan')->count_all_results();
-                echo $index . "<br>";
+    //     $daftarAtribut = $this->db->select('namaatribut')->from('daftaratributprediksi')->get()->result_array();
+    //     foreach ($daftarAtribut as $namaatribut) {
+    //         $namaKolom = $namaatribut['namaatribut'];
+    //         //mendapatkan jumlah total kasus dari setiap atribut
+    //         // $totalKasus = $this->db->where();
+    //         //for debugging purpose
+    //         // echo "<pre>";
+    //         // print_r($namaKolom);
+    //         // echo "</pre>";
+    //         // end of debugging
+    //         foreach ($this->input->post() as $index => $dataForm) {
+    //             $totalKasus = $this->db->where([$namaKolom => $dataForm])->from('datapenjualan')->count_all_results();
+    //             echo $index . "<br>";
 
-                if ($totalKasus == 0) {
-                    continue;
-                } else {
-                }
-
-
-                if ($index == 'jml_pembelian') {
-                    $this->gaussDistribution($dataForm);
-                }
-
-                //get data status = laris
-                $laris = $this->db->where([$namaKolom => $dataForm, "status" => "laris"])->from('datapenjualan')->count_all_results();
-                $tidaklaris = $this->db->where([$namaKolom => $dataForm, "status" => "tidak laris"])->from('datapenjualan')->count_all_results();
-
-                //debugging purpose
-
-                $data = [
-                    'id' => '',
-                    'namaatribut' => $namaKolom,
-                    'nilaiAtribut' => $dataForm,
-                    'jumlahKasus' => $totalKasus,
-                    'jumlahYes' => $laris,
-                    'jumlahNo' => $tidaklaris,
-                    'probabilitasYes' => 0,
-                    'probabilitasNo' => 0
-                ];
-                $this->db->insert('perhitungan', $data);
-            }
-        }
+    //             if ($totalKasus == 0) {
+    //                 continue;
+    //             } else {
+    //             }
 
 
-        //menghitung jumlah probabilitas
-        $this->db->select('namaAtribut, jumlahKasus, jumlahYes, jumlahNo');
-        $dataJumlah = $this->db->get('perhitungan');
+    //             if ($index == 'jml_pembelian') {
+    //                 $this->gaussDistribution($dataForm);
+    //             }
 
-        foreach ($dataJumlah->result_array() as $data) {
-            // echo "<pre>";
-            // print_r($data);
-            // echo "</pre>";
-            $namaAtribut = $data['namaAtribut'];
-            $probabilitasYes = ($data['jumlahYes'] == 0) ? 0 : $data['jumlahYes'] / $data['jumlahKasus'];
-            $probabilitasNo = ($data['jumlahNo'] == 0) ? 0 : $data['jumlahNo'] / $data['jumlahKasus'];
+    //             //get data status = laris
+    //             $laris = $this->db->where([$namaKolom => $dataForm, "status" => "laris"])->from('datapenjualan')->count_all_results();
+    //             $tidaklaris = $this->db->where([$namaKolom => $dataForm, "status" => "tidak laris"])->from('datapenjualan')->count_all_results();
 
-            // update data perhitungan
+    //             //debugging purpose
 
-            $data = [
-                'probabilitasYes' => $probabilitasYes,
-                'probabilitasNo' => $probabilitasNo
-            ];
+    //             $data = [
+    //                 'id' => '',
+    //                 'namaatribut' => $namaKolom,
+    //                 'nilaiAtribut' => $dataForm,
+    //                 'jumlahKasus' => $totalKasus,
+    //                 'jumlahYes' => $laris,
+    //                 'jumlahNo' => $tidaklaris,
+    //                 'probabilitasYes' => 0,
+    //                 'probabilitasNo' => 0
+    //             ];
+    //             $this->db->insert('perhitungan', $data);
+    //         }
+    //     }
 
-            $this->db->where('namaAtribut', $namaAtribut);
-            $this->db->update('perhitungan', $data);
-        }
-        // die;
-    }
+
+    //     //menghitung jumlah probabilitas
+    //     $this->db->select('namaAtribut, jumlahKasus, jumlahYes, jumlahNo');
+    //     $dataJumlah = $this->db->get('perhitungan');
+
+    //     foreach ($dataJumlah->result_array() as $data) {
+    //         // echo "<pre>";
+    //         // print_r($data);
+    //         // echo "</pre>";
+    //         $namaAtribut = $data['namaAtribut'];
+    //         $probabilitasYes = ($data['jumlahYes'] == 0) ? 0 : $data['jumlahYes'] / $data['jumlahKasus'];
+    //         $probabilitasNo = ($data['jumlahNo'] == 0) ? 0 : $data['jumlahNo'] / $data['jumlahKasus'];
+
+    //         // update data perhitungan
+
+    //         $data = [
+    //             'probabilitasYes' => $probabilitasYes,
+    //             'probabilitasNo' => $probabilitasNo
+    //         ];
+
+    //         $this->db->where('namaAtribut', $namaAtribut);
+    //         $this->db->update('perhitungan', $data);
+    //     }
+    //     // die;
+    // }
 
 
     //menangkap data baru
@@ -447,8 +453,11 @@ class M_NaiveBayes extends CI_Model
         $likehood = ["success" => 1, "fail" => 1];
         $occurance = ["success" => 1, "fail" => 1];
         // $likehoodNo = 0.0;
-
-        for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
+        // echo br();
+        // echo 'jumlah kfold ' . count($dataset);
+        // echo br();
+        // die;
+        for ($i = 0; $i < count($dataset); $i++) {
 
 
             foreach ($dataset[$i] as $key => $value) {
@@ -456,31 +465,6 @@ class M_NaiveBayes extends CI_Model
                 $this->db->where(['id' => $value['id']]);
                 $this->db->update('kasus', $data_status);
             }
-            // die;
-            // get mean and standard deviation for each attributes in each results
-            // foreach ($this->numericData as $key => $value) {
-            //     echo "atribut " . $value . br();
-            //     $dataInsert['id_data'] = $i;
-            //     $dataInsert['attribute_name'] = $value;
-            //     foreach ($this->conditions as $count => $cond) {
-            //         $condition = ['data_status' => 'testing', 'result_of_treatment' => $cond];
-            //         $this->db->select_avg($value);
-            //         $mean = $this->db->get_where('kasus', $condition)->result_array();
-            //         $dataInsert['mean' . $cond] = $mean[0][$value];
-            //         $this->db->select($value);
-            //         $arr =  $this->db->get_where('kasus', $condition)->result_array();
-            //         $wrapperArr = [];
-            //         foreach ($arr as $a) {
-            //             array_push($wrapperArr, $a[$value]);
-            //         }
-            //         $dataInsert['std_deviation' . $cond] = $this->standard_deviation($wrapperArr);
-
-            //         $wrapperArr = [];
-            //     }
-            //     $this->db->insert('mean_and_stdeviation', $dataInsert);
-            //     $dataInsert = [];
-            // }
-
             $dataInsert = [];
             $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
             $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
@@ -511,7 +495,7 @@ class M_NaiveBayes extends CI_Model
             foreach ($dataset[$i] as $keys => $data) {
                 $this->posteriorCalculation($data, $i);
             }
-
+            // die;
             $this->db->where(['data_status' => 'testing']);
             $this->db->update('kasus', ['data_status' => '']);
             $this->db->query("TRUNCATE mean_and_stdeviation");
@@ -557,6 +541,9 @@ class M_NaiveBayes extends CI_Model
                 continue;
             }
         }
+        // echo "posterior success " . $posterior['success'] . br();
+        // echo "posterior fail " . $posterior['fail'] . br();
+        // echo "result : " . ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail' . br();
 
         $datas['id'] =  '';
         $datas['iteration'] =  $iteration;
@@ -564,6 +551,7 @@ class M_NaiveBayes extends CI_Model
         $datas['posteriorfail'] =  $posterior['fail'];
         $datas['result'] =  ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail';
         $datas['real_result'] =  $data['result_of_treatment'];
+        // echo "result : " . $datas['result'] . br();
         $this->db->insert('posterior', $datas);
 
         // else
@@ -626,18 +614,30 @@ class M_NaiveBayes extends CI_Model
         if ($mode == 'real') {
             $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
             $dataset = $this->db->get()->result_array();
+            // shuffle($dataset);
         } else if ($mode == 'resampled') {
             $dataset = $this->db->get('kasus')->result_array();
+        } else if ($mode == 'realincases') {
+            // $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
+            $dataset = $this->db->get('kasusrealdata')->result_array();
+            // echo "<pre>";
+            // print_r($dataset);
+            // echo "</pre>";
+            // die;
         }
 
-        // $this->db->where(['data_type' => 'original data']);
-        // $dataset = $this->db->get('kasus')->count_all_results();
-
-
-
-        $this->load->library('crossvalidation');
-        $this->crossvalidation->setKfold($this->session->userdata('kfold'));
+        $kfold =  $this->session->userdata('kfold');
+        // $kfold = intval($kfold);
+        // echo $kfold;
+        // echo br();
+        // die;
+        $this->crossvalidation->setKfold($kfold);
         $dataset = $this->crossvalidation->splitData($dataset);
         return $dataset;
+    }
+
+    public function changekfold($kfold)
+    {
+        $this->crossvalidation->setKfold($kfold);
     }
 }

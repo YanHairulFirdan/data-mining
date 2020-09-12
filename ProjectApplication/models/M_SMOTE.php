@@ -103,6 +103,15 @@ class M_Smote extends CI_Model
 		[2,	23,	6.75,	6,	1,	19,	2,	1],
 
 	];
+
+
+	public $testDataset = [
+		[2,	32,	12,		6,	3,	35,	5,	0],
+		[2,	15,	1.75,	1,	2,	49,	7,	0],
+		[2,	26,	10.5,	6,	1,	50,	9,	0],
+		[1,	15,	11,	6,	1,	30,	25,	0],
+		[2,	34,	11.5,	12,	1,	25,	50,	0]
+	];
 	public static $diskretData = [];
 	// public function getMinoritydata()
 	// {
@@ -114,25 +123,33 @@ class M_Smote extends CI_Model
 	public function smote($numberDataSample, $percentage, $kVal)
 	{
 
+		// echo "data total : ";
+		// echo "<pre>";
+		// print_r($this->testDataset);
+		// echo "</pre>";
+
 		$this->kVal = $kVal;
 
 		if ($percentage < 100) {
 			$numberDataSample = ($percentage / 100) * $numberDataSample;
+			// echo $numberDataSample;
+			// die;
+			$percentage = 100;
 		}
 		$percentage /= 100;
 
 		for ($i = 0; $i < $numberDataSample; $i++) {
 			$this->nnArray = $this->euclideanDistance($this->dataset[$i]);
+			// $this->nnArray = $this->euclideanDistance($this->testDataset[$i]);
 			$this->populateData($percentage, $i, $this->nnArray);
 		}
-		$data = ['sintetis' => self::$syntheticData];
-		$this->session->set_userdata('sintetis', $data);
 
 		// echo "<pre>";
-		// echo "sintetis" . br();
 		// print_r(self::$syntheticData);
 		// echo "</pre>";
 		// die;
+		$data = ['sintetis' => self::$syntheticData];
+		$this->session->set_userdata('sintetis', $data);
 	}
 	private function euclideanDistance($currentData)
 	{
@@ -141,7 +158,9 @@ class M_Smote extends CI_Model
 		$currentDataDistance = [];
 		//looping dataset
 		foreach ($this->dataset as $key => $data) {
-			if ($currentData != $data) {
+			// foreach ($this->testDataset as $key => $data) {
+
+			if (!($currentData == $data)) {
 				$totalDistance = 0;
 				// looping each attributes field from currentData
 				$currentDataDistance = null;
@@ -153,15 +172,15 @@ class M_Smote extends CI_Model
 					$totalDistance += $currentDistance;
 				}
 				$totalDistance = number_format(sqrt($totalDistance), 2);
-				// echo"jarak dengan data ke-".$key." = ". $totalDistance."<br>";
-				array_push($distance, $totalDistance);
+				// array_push($distance, $totalDistance);
+				$distance[$key] = $totalDistance;
 				array_push($sortDistance, $totalDistance);
 			}
 		}
-
-		sort($sortDistance);
-
-
+		// sort($sortDistance);
+		// echo "<pre>";
+		// print_r($distance);
+		// echo "</pre>";
 		return $this->getNeatestDistanceNeighbors($distance, $sortDistance);
 	}
 
@@ -171,7 +190,6 @@ class M_Smote extends CI_Model
 	{
 		$i = 0;
 		$nearestIndex = [];
-		// echo $this->kVal;
 		while ($i < $this->kVal) {
 			$index = array_search($sorterNeirestNeigborList[$i], $nearestNeighborsList, true);
 			array_push($nearestIndex, $index);
@@ -184,6 +202,10 @@ class M_Smote extends CI_Model
 	private function roundingVal($data)
 	{
 
+		// echo "<pre>";
+		// print_r($data);
+		// echo "</pre>";
+		// die;
 		for ($i = 0; $i < count($data); $i++) {
 			for ($j = 0; $j < 8; $j++) {
 				if ($j != 2) {
@@ -203,15 +225,35 @@ class M_Smote extends CI_Model
 		while ($percentage != 0) {
 
 			$nn = rand(0, ($this->kVal - 1));
+			// echo "index array data saat ini " . $indexData . br();
+			// echo "<pre>";
+			// print_r($this->testDataset[$indexData]);
+			// echo "</pre>";
+			// echo "index data terdekat : " . $nn;
+			// echo "<pre>";
+			// print_r($this->testDataset[$nnArray[$nn]]);
+			// // print_r($nnArray);
+			// echo "</pre>";
 
 			for ($i = 0; $i < self::numberOfAttributes; $i++) {
-				$diff = $this->dataset[$nnArray[$nn]][$i] - $this->dataset[$indexData][$i];
 				$gap = mt_rand() / mt_getrandmax();
-				$result = $this->dataset[$indexData][$i] + $gap * $diff;
-				$result = number_format($result, 2);
+				$diff = $this->dataset[$nnArray[$nn]][$i] - $this->dataset[$indexData][$i];
+
+				// $diff = $this->testDataset[$nnArray[$nn]][$i] - $this->testDataset[$indexData][$i];
+				// echo "hasil pengurangan : " . $diff . br();
+				// echo "gap : " . $gap . br();
+				$result = $this->dataset[$indexData][$i] + ($gap * $diff);
+				// $result = $this->testDataset[$indexData][$i] + ($gap * $diff);
+				// $result = number_format($result, 2);
+				// echo "hasil perhitungan " . $result . br();
 				array_push($syntheticTemp, $result);
 			}
 
+			// echo "hasil sintesis data : " . br();
+			// echo "<pre>";
+			// print_r($syntheticTemp);
+			// echo "</pre>";
+			// echo "========================== : " . br();
 
 			array_push(self::$syntheticData, $syntheticTemp);
 			$syntheticTemp = [];
@@ -344,6 +386,7 @@ class M_Smote extends CI_Model
 		self::$syntheticData = $this->roundingVal(self::$syntheticData);
 		$this->mergeData();
 		// self::$allData = $this->diskritVal(self::$allData);
+		shuffle(self::$allData);
 		foreach (self::$allData as $key => $data) {
 			$this->saverawdata($data);
 		}
@@ -362,7 +405,7 @@ class M_Smote extends CI_Model
 		$data = $this->db->get('rawdata')->result_array();
 
 		$data = $this->diskritVal($data);
-		shuffle($data);
+		// shuffle($data);
 		// echo count(self::$diskretData);
 
 		foreach ($data as $key => $data) {
@@ -408,6 +451,34 @@ class M_Smote extends CI_Model
 					$this->db->update('kasus', $data_status);
 				}
 			}
+		}
+	}
+
+	function changeArr($arr)
+	{
+		$res = [];
+		$tempArr = [];
+		foreach ($arr as $key => $data) {
+			foreach ($data as $key => $value) {
+				$tempArr[$this->columnName[$key]] = $value;
+			}
+			array_push($res, $tempArr);
+			$tempArr = [];
+		}
+
+		return $res;
+	}
+
+	public function inputdata()
+	{
+		$allData = array_merge($this->majoritydata, $this->dataset);
+
+		shuffle($allData);
+		$allData = $this->changeArr($allData);
+		$allData = $this->diskritVal($allData);
+		foreach ($allData as $key => $data) {
+			$data['id'] = '';
+			$this->db->insert('kasusrealdata', $data);
 		}
 	}
 }

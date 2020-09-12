@@ -200,11 +200,23 @@ class C_naiveBayes extends CI_Controller
     public function classificationreal()
     {
         $this->M_NaiveBayes->classification('real');
+        $this->session->set_userdata('mode', 'data asli');
         redirect('confusionmatrix/');
     }
     public function classificationresampled()
     {
+        $this->session->set_userdata('mode', 'data hasil sampling');
         $this->M_NaiveBayes->classification('resampled');
+        redirect('confusionmatrix/');
+    }
+    public function classificationtest()
+    {
+
+        $this->session->set_userdata('mode', 'realincases');
+        if (empty($this->session->userdata('kfold'))) {
+            $this->session->set_userdata('kfold', 5);
+        }
+        $this->M_NaiveBayes->classification('realincases');
         redirect('confusionmatrix/');
     }
 
@@ -232,27 +244,33 @@ class C_naiveBayes extends CI_Controller
     }
 
 
-    public function teststdDV()
+    // public function posterior()
+    // {
+    //     $this->db->query('TRUNCATE mean_and_stdeviation');
+    //     $data = $this->db->get_where('kasus', ['id' => 138])->result_array();
+
+    //     // print_r($data);
+    //     $this->M_NaiveBayes->posteriorCalculation($data);
+    // }
+    function changeKFold()
     {
-        // echo $this->M_NaiveBayes->standard_deviation([30, 36, 47, 50, 52, 52, 56, 60, 63, 70, 70, 110]);
-        // echo "<pre>";
-        // $angka . "1" = 1;
-        // echo $this->M_NaiveBayes->gaussianDistribution(100000, 68386.66, 42397.5);
-        // echo "</pre>";
-    }
+        // echo "called";
+        // if ($this->input->method(TRUE) == 'POST') {
+        // echo $this->input->post('newkfold');
+        $this->session->set_userdata('kfold', intval($this->input->post('newkfold')));
+        // $this->session->unset_userdata('kfold');
+        // echo br();
+        // echo $this->session->userdata('newkfold');
+        // die;
+        //     // $kfold = $this->input->post('newkfold');
+        //     if (!empty($this->input->post('newkfold'))) {
+        //         echo $this->input->post('newkfold');
+        //     } else {
+        //         echo 'empty';
+        //     }
+        // }
+        redirect($_SERVER['HTTP_REFERER']);
 
-
-    public function posterior()
-    {
-        $this->db->query('TRUNCATE mean_and_stdeviation');
-        $data = $this->db->get_where('kasus', ['id' => 138])->result_array();
-
-        // print_r($data);
-        $this->M_NaiveBayes->posteriorCalculation($data);
-    }
-
-    public function teststd()
-    {
-        echo $this->session->userdata('kfold');
+        // $this->M_NaiveBayes->changekfold($kfold);
     }
 }
