@@ -455,22 +455,41 @@ class M_NaiveBayes extends CI_Model
         // echo 'jumlah kfold ' . count($dataset);
         // echo br();
         // die;
+        // looping through the dataset, for training it will be only 9 data take from real case data's table
         for ($i = 0; $i < count($dataset); $i++) {
-
-
-            foreach ($dataset[$i] as $key => $value) {
-                $data_status  = ['data_status' => 'testing'];
-                $this->db->where(['id' => $value['id']]);
-                $this->db->update('kasus', $data_status);
-            }
+            // echo "jumlah data = " . count($dataset);
+            // die;
+            // comment for testing and if maintain was complete undo this comment
+            // foreach ($dataset[$i] as $key => $value) {
+            //     $data_status  = ['data_status' => 'testing'];
+            //     $this->db->where(['id' => $value['id']]);
+            //     $this->db->update('kasus', $data_status);
+            // }
+            // end foreach
             $dataInsert = [];
+            // this was for real process
+            // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+            // $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
+            // $mean['success'] = $this->db->get('kasus')->result_array();
+
+            // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+            // $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
+            // $mean['fail'] = $this->db->get('kasus')->result_array();
+
+            // for maintaining only
             $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-            $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
-            $mean['success'] = $this->db->get('kasus')->result_array();
+            $this->db->where(['result_of_treatment' => 'success', 'data_type' => '']);
+            $mean['success'] = $this->db->get('kasusrealdata')->result_array();
 
             $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-            $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
-            $mean['fail'] = $this->db->get('kasus')->result_array();
+            $this->db->where(['result_of_treatment' => 'fail', 'data_type' => '']);
+            $mean['fail'] = $this->db->get('kasusrealdata')->result_array();
+
+            // end maintaining
+            // echo "<pre>";
+            // print_r($mean);
+            // echo "</pre>";
+            // die;
 
             foreach ($this->numericData as $key => $numeric) {
                 // calculate mean and standard deviation
@@ -478,20 +497,31 @@ class M_NaiveBayes extends CI_Model
                 foreach ($this->conditions as $key => $condition) {
                     // get mean
                     $this->db->select($numeric);
-                    $arr = $this->db->get_where('kasus', ['result_of_treatment' => $condition])->result_array();
+                    // $arr = $this->db->get_where('kasus', ['result_of_treatment' => $condition])->result_array();
+                    $arr = $this->db->get_where('kasusrealdata', ['result_of_treatment' => $condition, 'data_type' => ''])->result_array();
                     $std = $this->standard_deviation($arr);
                     $dataInsert['mean' . $condition] = $mean[$condition][0][$numeric];
                     // echo $mean[$condition][0][$numeric] . br();
+                    // echo "jumlah atribut " . $numeric . " untuk kondisi " . $condition;
+                    // echo "<pre>";
+                    // print_r(count($arr));
+                    // echo br();
+                    // print_r($std);
+
                     $dataInsert['std_deviation' . $condition] = $std;
                 }
                 // die;
                 $this->db->insert('mean_and_stdeviation', $dataInsert);
-                $dataInsert = [];
+                // $dataInsert = [];
+                // echo "<pre>";
+                // print_r($dataInsert);
+                // echo "<pre>";
             }
+
             // die;
-            // looping through dataset-i
-            foreach ($dataset[$i] as $keys => $data) {
-                $this->posteriorCalculation($data, $i);
+            // looping through dataset-i $dataset[$i]
+            foreach ($dataset as $keys => $data) {
+                $this->posteriorCalculation($data, 0);
             }
             // die;
             $this->db->where(['data_status' => 'testing']);
@@ -499,11 +529,17 @@ class M_NaiveBayes extends CI_Model
             $this->db->query("TRUNCATE mean_and_stdeviation");
             // die;
         }
+
+        foreach ($dataset as $keys => $data) {
+            $this->posteriorCalculation($data, 0);
+        }
+        die;
     }
 
 
     public function posteriorCalculation($data, $iteration)
     {
+
 
         $dataInsert = [];
 
@@ -525,17 +561,35 @@ class M_NaiveBayes extends CI_Model
                         $conds = ['attribute_name' => $keyattr];
                         $this->db->select('' . $this->columName[0] . $condition . ',' . $this->columName[1] . $condition . '');
                         $mean_std = $this->db->get_where('mean_and_stdeviation', $conds)->result_array();
+                        // echo "<pre>";
+                        // print_r($mean_std);
+                        // echo "</pre>";
                         $mean = $mean_std[0][$this->columName[0] . $condition];
                         $std = $mean_std[0][$this->columName[1] . $condition];
                         $gaussianDstr = $this->gaussianDistribution($attribute, $mean, $std);
                         $posterior[$condition] *= $gaussianDstr;
                     } else {
-                        $totalOccurance = $this->db->where([$keyattr => $attribute])->from('kasus')->count_all_results();
-                        $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition])->from('kasus')->count_all_results();
+                        // $totalOccurance = $this->db->where([$keyattr => $attribute])->from('kasus')->count_all_results();
+                        // echo "kay attr : " . $keyattr . br();
+                        // echo "attribut : " . $attribute . br();
+                        $totalOccurance = $this->db->where(['data_type' => '', 'result_of_treatment' => $condition])->from('kasusrealdata')->count_all_results();
+                        // $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition])->from('kasus')->count_all_results();
+                        $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition, 'data_type' => ''])->from('kasusrealdata')->count_all_results();
                         $posterior[$condition] *= $occurance[$condition] / $totalOccurance;
+                        // echo "total occurance for result of treatment in condition " . $condition . " = " . $totalOccurance . br();
+                        // echo "<pre>";
+                        // echo "total occurance " . " for " . $keyattr . " with value = " . $attribute . " in condition " . $condition . " = " . $occurance[$condition]  . br();
+                        // // print_r($occurance[$condition]);
+                        // echo br();
+                        // print_r($posterior[$condition]);
+                        // echo "</pre>";
                     }
                 }
+            } elseif ($keyattr == 'id') {
+
+                $datas['id'] =  $attribute;
             } else {
+
                 continue;
             }
         }
@@ -543,19 +597,27 @@ class M_NaiveBayes extends CI_Model
         // echo "posterior fail " . $posterior['fail'] . br();
         // echo "result : " . ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail' . br();
 
-        $datas['id'] =  '';
+        // $datas['id'] =  '';
         $datas['iteration'] =  $iteration;
         $datas['posteriorsuccess'] =  $posterior['success'];
         $datas['posteriorfail'] =  $posterior['fail'];
         $datas['result'] =  ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail';
         $datas['real_result'] =  $data['result_of_treatment'];
-        // echo "result : " . $datas['result'] . br();
-        $this->db->insert('posterior', $datas);
-
+        echo "result : " . $datas['result'] . br();
+        echo "real result : " . $datas['real_result'] . br();
+        // $this->db->insert('posterior', $datas);
+        // echo "<pre>";
+        // print_r($datas);
+        // echo "</pre>";
         // else
         // get the probability of the attribute's occurance
         // insert into table prior 
     }
+
+    /*
+        standar deviasi
+        std_p = 
+    */
     function standard_deviation($arr)
     {
 
@@ -603,6 +665,8 @@ class M_NaiveBayes extends CI_Model
         // $gaussian = $div * pow(2.718, ($substraction / $bottomDiv));
         // $gaussian = (1 / $standard_deviation * 2.506) * exp((((pow(($xi - $mean), 2)) / (2 * pow($standard_deviation, 2)))));
         $gaussian = ($gaussian);
+
+        // echo "distribusi normal untuk " . $xi . " = " . $gaussian . br();
         return $gaussian;
     }
 
@@ -618,12 +682,14 @@ class M_NaiveBayes extends CI_Model
             $dataset = $this->db->get('kasus')->result_array();
         } else if ($mode == 'realincases') {
             // $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
+            // $this->db->where(['data_type' => 'testing']);
             $dataset = $this->db->get('kasusrealdata')->result_array();
             // echo "<pre>";
-            echo "now this code is inside of maintain branch";
+            // echo "<pre>";
             // print_r($dataset);
             // echo "</pre>";
-            // die;
+            // // die;
+            // return $dataset;
         }
         echo "before shuffled" . br();
         echo "<pre>";
