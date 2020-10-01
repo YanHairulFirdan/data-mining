@@ -620,6 +620,7 @@ class M_NaiveBayes extends CI_Model
             // $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
             $dataset = $this->db->get('kasusrealdata')->result_array();
             // echo "<pre>";
+            echo "now this code is inside of maintain branch";
             // print_r($dataset);
             // echo "</pre>";
             // die;
