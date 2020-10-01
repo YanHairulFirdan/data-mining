@@ -460,11 +460,11 @@ class M_NaiveBayes extends CI_Model
             // echo "jumlah data = " . count($dataset);
             // die;
             // comment for testing and if maintain was complete undo this comment
-            // foreach ($dataset[$i] as $key => $value) {
-            //     $data_status  = ['data_status' => 'testing'];
-            //     $this->db->where(['id' => $value['id']]);
-            //     $this->db->update('kasus', $data_status);
-            // }
+            foreach ($dataset[$i] as $key => $value) {
+                $data_status  = ['data_status' => 'testing'];
+                $this->db->where(['id' => $value['id']]);
+                $this->db->update('kasus', $data_status);
+            }
             // end foreach
             $dataInsert = [];
             // this was for real process
@@ -486,10 +486,6 @@ class M_NaiveBayes extends CI_Model
             $mean['fail'] = $this->db->get('kasusrealdata')->result_array();
 
             // end maintaining
-            // echo "<pre>";
-            // print_r($mean);
-            // echo "</pre>";
-            // die;
 
             foreach ($this->numericData as $key => $numeric) {
                 // calculate mean and standard deviation
