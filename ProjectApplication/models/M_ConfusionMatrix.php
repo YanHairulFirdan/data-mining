@@ -30,10 +30,10 @@ class M_ConfusionMatrix extends CI_Model
     public function performance()
     {
         $dataset = $this->splitData();
-        $tp = $tn = $fp = $fn = 0;
+        $tp = $tn = $fp = $fn = $totalTP = $totalTN = $totalFP = $totalFN = 0;
         $count = 0;
         $performances = [];
-        $avgaccuracy = 0.0;
+        $avgaccuracy = $avgPrecision = $avgrecall = 0.0;
 
         foreach ($dataset as $keys => $tuples) {
             // echo "performance dari k-" . $key . br();
@@ -59,11 +59,19 @@ class M_ConfusionMatrix extends CI_Model
             // echo "false positive = " . $fp . br();
             // echo "false negative = " . $fn . br();
             $bottomDivAccr = (($tp + $tn + $fp + $fn) == 0) ? 1 : ($tp + $tn + $fp + $fn);
-            $bottomDivPre = (($tp + $fp) == 0) ? 1 : ($tp + $fp);
-            $bottomDivRec = (($tp + $fn) == 0) ? 1 : ($tp + $fn);
+            $bottomDivPrecisionSuccess = (($tn + $fn) == 0) ? 1 : ($tn + $fn);
+            $bottomDivRecallSuccess = (($tn + $fp) == 0) ? 1 : ($tn + $fp);
+            $bottomDivPrecisionFail = (($tp + $fp) == 0) ? 1 : ($tp + $fp);
+            $bottomDivRecallFail = (($tp + $fn) == 0) ? 1 : ($tp + $fn);
             $accuracy = ($tp + $tn) / $bottomDivAccr;
-            $precision = $tp / $bottomDivPre;
-            $recall = $tp / $bottomDivRec;
+            $precision = $tp / $bottomDivPrecisionFail;
+            $recall = $tp / $bottomDivRecallFail;
+            $precisionSuccess = $tn / $bottomDivPrecisionSuccess;
+            $recallSuccess = $tn / $bottomDivRecallSuccess;
+            $totalTP += $tp;
+            $totalTN += $tn;
+            $totalFP += $fp;
+            $totalFN += $fn;
             $performances[$keys]['tp'] = $tp;
             $performances[$keys]['fn'] = $fn;
             $performances[$keys]['tn'] = $tn;
@@ -71,20 +79,33 @@ class M_ConfusionMatrix extends CI_Model
             $performances[$keys]['accuracy'] = $accuracy;
             $performances[$keys]['precision'] = $precision;
             $performances[$keys]['recall'] = $recall;
+            $performances[$keys]['precisionsuccess'] = $precisionSuccess;
+            $performances[$keys]['recallsuccess'] = $recallSuccess;
             $avgaccuracy += $accuracy;
+            $avgPrecision += $precision;
+            $avgrecall += $recall;
             $tp = $tn = $fp = $fn = 0;
-
-
-
             $count++;
         }
+
+
+        echo "total TP = " . $totalTP . br();
+        echo "total TN = " . $totalTN . br();
+        echo "total FP = " . $totalFP . br();
+        echo "total FN = " . $totalFN . br();
+        $avgaccuracy /= $this->session->userdata('kfold');
+        $performances['totalTP'] = $totalTP;
+        $performances['totalTN'] = $totalTN;
+        $performances['totalFP'] = $totalFP;
+        $performances['totalFN'] = $totalFN;
+        $performances['avgAccuracy'] = $avgaccuracy;
+        $performances['avgprecision'] = $avgPrecision / $this->session->userdata('kfold');
+        $performances['avgrecall'] = $avgrecall / $this->session->userdata('kfold');
         // echo "<pre>";
         // print_r($performances);
         // echo "</pre>";
+        // die;
 
-
-        $avgaccuracy /= $this->session->userdata('kfold');
-        $performances['avgAccuracy'] = $avgaccuracy;
         return $performances;
     }
 }

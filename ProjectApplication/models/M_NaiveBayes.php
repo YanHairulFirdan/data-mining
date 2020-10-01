@@ -446,9 +446,7 @@ class M_NaiveBayes extends CI_Model
     {
         $this->db->query("TRUNCATE posterior");
         $dataset = $this->splitData($mode);
-        // echo "<pre>";
-        // print_r($dataset);
-        // echo "</pre>";
+
         $dataInsert = [];
         $likehood = ["success" => 1, "fail" => 1];
         $occurance = ["success" => 1, "fail" => 1];
@@ -615,6 +613,7 @@ class M_NaiveBayes extends CI_Model
             $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
             $dataset = $this->db->get()->result_array();
             // shuffle($dataset);
+
         } else if ($mode == 'resampled') {
             $dataset = $this->db->get('kasus')->result_array();
         } else if ($mode == 'realincases') {
@@ -625,6 +624,23 @@ class M_NaiveBayes extends CI_Model
             // echo "</pre>";
             // die;
         }
+        echo "before shuffled" . br();
+        echo "<pre>";
+        $i = 0;
+        $success = $fail = 0;
+        foreach ($dataset as $key => $data) {
+            ($data["result_of_treatment"] == 'success') ? $success++ : $fail++;
+
+            if ($i == 17) {
+                echo "=======" . br();
+                echo "success " . $success . br();
+                echo "fail " . $fail . br();
+                $i = 0;
+                $success = $fail = 0;
+            }
+            $i++;
+        }
+        // echo "</pre>";
 
         $kfold =  $this->session->userdata('kfold');
         // $kfold = intval($kfold);
