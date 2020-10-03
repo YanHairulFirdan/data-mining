@@ -137,7 +137,6 @@ class M_NaiveBayes extends CI_Model
             $this->db->where('namaAtribut', $namaAtribut);
             $this->db->update('perhitungan', $data);
         }
-        // die;
     }
 
     function getDataPrediksi()
@@ -323,7 +322,7 @@ class M_NaiveBayes extends CI_Model
     //         $this->db->where('namaAtribut', $namaAtribut);
     //         $this->db->update('perhitungan', $data);
     //     }
-    //     // die;
+    /
     // }
 
 
@@ -369,7 +368,6 @@ class M_NaiveBayes extends CI_Model
             'status' => $this->input->post('keterangan')
         ];
         // var_dump($data);
-        // die;
         $this->db->where(['id' => $data['id']]);
         $this->db->update('datapenjualan', $data);
     }
@@ -409,7 +407,6 @@ class M_NaiveBayes extends CI_Model
         //     $data['namaproduk'][] = $raw['namaproduk'];
         // }
         // var_dump($data);
-        // die;
 
 
 
@@ -451,7 +448,6 @@ class M_NaiveBayes extends CI_Model
         $likehood = ["success" => 1, "fail" => 1];
         $occurance = ["success" => 1, "fail" => 1];
 
-        // die;
         // looping through the dataset, for training it will be only 9 data take from real case data's table
         for ($i = 0; $i < count($dataset); $i++) {
             // echo "jumlah data = " . count($dataset);
@@ -491,29 +487,21 @@ class M_NaiveBayes extends CI_Model
 
                     $dataInsert['std_deviation' . $condition] = $std;
                 }
-                echo "<pre>";
-                print_r($dataInsert);
-                echo "======================";
-                echo "</pre>";
-                // die;
-                $this->db->insert('mean_and_stdeviation', $dataInsert);
-                // $dataInsert = [];
                 // echo "<pre>";
                 // print_r($dataInsert);
-                // echo "<pre>";
+                // echo "======================";
+                // echo "</pre>";
+                $this->db->insert('mean_and_stdeviation', $dataInsert);
             }
 
-            // die;
             // looping through dataset-i $dataset[$i]
             foreach ($dataset[$i] as $keys => $data) {
                 $this->posteriorCalculation($data, $i, $table);
             }
-            // die;
             $this->db->where(['data_status' => 'testing']);
             // $this->db->update('kasus', ['data_status' => '']);
             $this->db->update($table, ['data_status' => '']);
             $this->db->query("TRUNCATE mean_and_stdeviation");
-            // die;
         }
         die;
     }
@@ -525,7 +513,6 @@ class M_NaiveBayes extends CI_Model
 
         $dataInsert = [];
 
-        // $this->;
         $posterior = [
             'success' => 1,
             'fail' => 1
@@ -556,22 +543,12 @@ class M_NaiveBayes extends CI_Model
             }
         }
 
-        // $datas['id'] =  '';
         $datas['iteration'] =  $iteration;
         $datas['posteriorsuccess'] =  $posterior['success'];
         $datas['posteriorfail'] =  $posterior['fail'];
         $datas['result'] =  ($posterior['success'] > $posterior['fail']) ? 'success' : 'fail';
         $datas['real_result'] =  $data['result_of_treatment'];
-        // echo "result : " . $datas['result'] . br();
-        // echo "real result : " . $datas['real_result'] . br();
         $this->db->insert('posterior', $datas);
-        // echo "<pre>";
-        // echo "result = " . $datas['result'] . br();
-        // print_r($posterior);
-        // echo "</pre>";
-        // else
-        // get the probability of the attribute's occurance
-        // insert into table prior 
     }
 
     /*
@@ -583,7 +560,6 @@ class M_NaiveBayes extends CI_Model
 
         $meanPow = 0;
 
-        // die;
         $numberofItems = count($arr);
         // $meanPow = pow((array_sum($arr) / $numberofItems), 2);
         foreach ($arr as $key => $a) {
@@ -643,7 +619,7 @@ class M_NaiveBayes extends CI_Model
             // echo "<pre>";
             // print_r($dataset);
             // echo "</pre>";
-            // // die;
+        
             // return $dataset;
         }
         // echo "</pre>";
@@ -652,7 +628,6 @@ class M_NaiveBayes extends CI_Model
         // $kfold = intval($kfold);
         // echo $kfold;
         // echo br();
-        // die;
         $this->crossvalidation->setKfold($kfold);
         $dataset = $this->crossvalidation->splitData($dataset);
 
