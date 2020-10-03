@@ -39,6 +39,34 @@ class M_ConfusionMatrix extends CI_Model
             // echo "performance dari k-" . $key . br();
             foreach ($tuples as $key => $data) {
 
+                // if ($data['real_result'] == 'success') {
+                //     if ($data['result'] == 'success') {
+                //         echo "real result = " . $data['real_result'] . br();
+                //         echo "predicted result = " . $data['result'] . br();
+                //         echo "=============================================" . br();
+                //         $tn++;
+                //     } elseif ($data['result'] == 'fail') {
+                //         echo "real result = " . $data['real_result'] . br();
+                //         echo "predicted result = " . $data['result'] . br();
+                //         echo "=============================================" . br();
+
+                //         $fp++;
+                //     }
+                // } else if ($data['real_result'] == 'fail') {
+                //     if ($data['result'] == 'fail') {
+                //         echo "real result = " . $data['real_result'] . br();
+                //         echo "predicted result = " . $data['result'] . br();
+                //         echo "=============================================" . br();
+
+                //         $tp++;
+                //     } else  if ($data['real_result'] == 'success') {
+                //         echo "real result = " . $data['real_result'] . br();
+                //         echo "predicted result = " . $data['result'] . br();
+                //         echo "=============================================" . br();
+
+                //         $fn++;
+                //     }
+                // }
                 if ($data['real_result'] == 'success' && $data['result'] == 'success') {
                     $tn++;
                 } else if ($data['real_result'] == 'fail' && $data['result'] == 'fail') {
@@ -50,6 +78,11 @@ class M_ConfusionMatrix extends CI_Model
                 }
             }
 
+            // echo "performance for this iteration : " . br();
+            // echo "true fail = " . $tp . br();
+            // echo "false fail = " . $fp . br();
+            // echo "true success = " . $tn . br();
+            // echo "false success = " . $fn . br();
             if (!isset($performances[$keys])) {
                 $performances[$keys] = [];
             }
@@ -93,6 +126,7 @@ class M_ConfusionMatrix extends CI_Model
         echo "total TN = " . $totalTN . br();
         echo "total FP = " . $totalFP . br();
         echo "total FN = " . $totalFN . br();
+        die;
         $avgaccuracy /= $this->session->userdata('kfold');
         $performances['totalTP'] = $totalTP;
         $performances['totalTN'] = $totalTN;
