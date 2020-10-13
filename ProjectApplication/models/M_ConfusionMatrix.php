@@ -122,11 +122,11 @@ class M_ConfusionMatrix extends CI_Model
         }
 
 
-        echo "total TP = " . $totalTP . br();
-        echo "total TN = " . $totalTN . br();
-        echo "total FP = " . $totalFP . br();
-        echo "total FN = " . $totalFN . br();
-        die;
+        // echo "total TP = " . $totalTP . br();
+        // echo "total TN = " . $totalTN . br();
+        // echo "total FP = " . $totalFP . br();
+        // echo "total FN = " . $totalFN . br();
+        // die;
         $avgaccuracy /= $this->session->userdata('kfold');
         $performances['totalTP'] = $totalTP;
         $performances['totalTN'] = $totalTN;

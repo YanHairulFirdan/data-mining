@@ -218,6 +218,8 @@ class C_naiveBayes extends CI_Controller
         }
         $this->M_NaiveBayes->classification('realincases');
         redirect('confusionmatrix/');
+
+        // $this->M_NaiveBayes->testingFun('kasusrealdata');
     }
 
 
