@@ -28,7 +28,7 @@ class CrossValidation
             $remain = count($dataset) % $this->kFold;
             $newItemCount = count($dataset) - $remain;
             $splitedData = $this->pushData($dataset, $newItemCount / $this->kFold);
-            $counter = $newItemCount - 1;
+            $counter = $newItemCount;
             for ($i = 0; $i < $remain; $i++) {
                 array_push($splitedData[$i], $dataset[$counter]);
                 $counter++;

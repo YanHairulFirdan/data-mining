@@ -445,61 +445,98 @@ class M_NaiveBayes extends CI_Model
     function classification($mode)
     {
         $this->db->query("TRUNCATE posterior");
-        $dataset = $this->splitData($mode);
+        $this->db->query("TRUNCATE mean_and_stdeviation");
+        // $dataset = $this->splitData($mode);
         $table = ($mode == 'realincases') ? 'kasusrealdata' : 'kasus';
-        $dataInsert = [];
-        $likehood = ["success" => 1, "fail" => 1];
-        $occurance = ["success" => 1, "fail" => 1];
+        // echo $table;
+        // die;
+        $this->db->order_by('iteration', 'ASC');
+        $dataset = $this->db->get($table)->result_array();
+        // looping for cross validation
+        // get iteration data from mean and standard deviation table
+        for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
+            $this->mean_std($table, $i);
+            // echo "running ...." . br();
+            $count = 0;
+            foreach ($dataset as $data) {
+                if ($i != $data['iteration']) {
+                    continue;
+                }
+                $this->posteriorCalculation($data, $i, $table);
+            }
+        }
+
+
+        // $dataInsert = [];
+        // $likehood = ["success" => 1, "fail" => 1];
+        // $occurance = ["success" => 1, "fail" => 1];
 
         // die;
         // looping through the dataset, for training it will be only 9 data take from real case data's table
-        for ($i = 0; $i < count($dataset); $i++) {
-            // echo "jumlah data = " . count($dataset);
-            // end foreach
-            // this was for real process
-            // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-            // $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
-            // $mean['success'] = $this->db->get('kasus')->result_array();
+        // for ($i = 0; $i < count($dataset); $i++) {
+        // echo "jumlah data = " . count($dataset);
+        // end foreach
+        // this was for real process
+        // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+        // $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
+        // $mean['success'] = $this->db->get('kasus')->result_array();
 
-            // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-            // $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
-            // $mean['fail'] = $this->db->get('kasus')->result_array();
-            $this->mean_std($table);
-            // for maintaining only
-            foreach ($dataset[$i] as $keys => $data) {
-                $this->posteriorCalculation($data, $i, $table);
-            }
-            // die;
-            $this->db->where(['data_status' => 'testing']);
-            // $this->db->update('kasus', ['data_status' => '']);
-            $this->db->update($table, ['data_status' => '']);
-            $this->db->query("TRUNCATE mean_and_stdeviation");
-            // die;
-        }
+        // $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
+        // $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
+        // $mean['fail'] = $this->db->get('kasus')->result_array();
+        // $this->mean_std($table);
+        // // for maintaining only
+        // foreach ($dataset[$i] as $keys => $data) {
+        //     $this->posteriorCalculation($data, $i, $table);
+        // }
+        // die;
+        // $this->db->where(['data_status' => 'testing']);
+        // // $this->db->update('kasus', ['data_status' => '']);
+        // $this->db->update($table, ['data_status' => '']);
+        // $this->db->query("TRUNCATE mean_and_stdeviation");
+        // die;
+        // }
     }
 
 
     public function partition($mode)
     {
-        $table = ($mode == 'real') ? 'kasusrealdata' : 'kasus';
+
+        $table = ($mode == 'realincases') ? 'kasusrealdata' : 'kasus';
+        // echo $mode;
+        // die;
         $datasets = $this->splitData($mode);
-        foreach ($datasets as $key => $dataset) {
-            foreach ($dataset as $attr => $data) {
-                $this->db->set('iteration', $key);
-                $this->db->where('id', $data['id']);
-                $this->db->update($table);
+        // echo "<pre>";
+        // print_r($datasets);
+        // echo "</pre>";
+        // die;
+
+        if ($datasets != "ready") {
+            foreach ($datasets as $key => $dataset) {
+                echo "partisi ke-" . $key . br();
+                echo "jumlah data = " . count($dataset) . br();
+                foreach ($dataset as $attr => $data) {
+                    $update = ['iteration' => $key];
+                    $this->db->set($update);
+                    $this->db->where('id', $data['id']);
+                    $this->db->update($table);
+                    // echo $attr  . "data with id = " . $data['id'] . " updated" . br();
+                    // echo "id = " . $data['id'] . "." . br();
+                }
             }
         }
+
+        // die;
     }
-    public function mean_std($table)
+    public function mean_std($table, $iteration)
     {
         $dataInsert = [];
         $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-        $this->db->where(['result_of_treatment' => 'success', 'data_status' => '']);
+        $this->db->where(['result_of_treatment' => 'success', 'iteration <>' => $iteration]);
         $mean['success'] = $this->db->get($table)->result_array();
 
         $this->db->select('AVG(age) as age, AVG(time) as time, AVG(number_of_warts) as number_of_warts, AVG(area) as area, AVG(induration_diameter) as induration_diameter');
-        $this->db->where(['result_of_treatment' => 'fail', 'data_status' => '']);
+        $this->db->where(['result_of_treatment' => 'fail', 'iteration <>' => $iteration]);
         $mean['fail'] = $this->db->get($table)->result_array();
 
         // end maintaining
@@ -511,13 +548,13 @@ class M_NaiveBayes extends CI_Model
                 // get mean
                 $this->db->select($numeric);
                 // $arr = $this->db->get_where('kasus', ['result_of_treatment' => $condition])->result_array();
-                $arr = $this->db->get_where($table, ['result_of_treatment' => $condition, 'data_status' => ''])->result_array();
+                $arr = $this->db->get_where($table, ['result_of_treatment' => $condition, 'iteration <>' => $iteration])->result_array();
                 $std = $this->standard_deviation($arr);
                 $dataInsert['mean' . $condition] = $mean[$condition][0][$numeric];
 
                 $dataInsert['std_deviation' . $condition] = $std;
             }
-
+            $dataInsert['iteration'] = $iteration;
             $this->db->insert('mean_and_stdeviation', $dataInsert);
         }
     }
@@ -535,31 +572,38 @@ class M_NaiveBayes extends CI_Model
             'fail' => []
         ];
         foreach ($data as $keyattr => $attribute) {
-            if (($keyattr != 'id') && ($keyattr != 'result_of_treatment') && ($keyattr != 'data_type') && ($keyattr != 'data_status')) {
+            // echo "menghitung posterior" . br();
+            // echo $keyattr . br();
+            // echo "====================" . br();
+            if (($keyattr != 'id') && ($keyattr != 'result_of_treatment') && ($keyattr != 'data_type') && ($keyattr != 'data_status') && ($keyattr != 'iteration')) {
                 foreach ($this->conditions as $key => $condition) {
                     if (in_array($keyattr, $this->numericData)) {
-                        $conds = ['attribute_name' => $keyattr];
+                        $conds = ['attribute_name' => $keyattr, 'iteration' => $iteration];
                         $this->db->select('' . $this->columName[0] . $condition . ',' . $this->columName[1] . $condition . '');
                         $mean_std = $this->db->get_where('mean_and_stdeviation', $conds)->result_array();
+                        // echo "<pre>";
+                        // print_r($mean_std);
+                        // echo "</pre>";
                         $mean = $mean_std[0][$this->columName[0] . $condition];
                         $std = $mean_std[0][$this->columName[1] . $condition];
                         $gaussianDstr = $this->gaussianDistribution($attribute, $mean, $std);
+
                         $prior[$condition][$keyattr] = $gaussianDstr;
                         $posterior[$condition] *= $gaussianDstr;
+                        // echo "=====================" . br();
+                        // echo $posterior[$condition] . br();
+                        // echo "=====================" . br();
                     } else {
-                        $totalData = $this->db->where(['data_status' => ''])->from($tablename)->count_all_results();
-                        $totalOccurance = $this->db->where(['result_of_treatment' => $condition, 'data_status' => ''])->from($tablename)->count_all_results();
-                        // $attributeOccurance = $this->db->where(["" . $keyattr . "" => $attribute, 'result_of_treatment' => $condition, 'data_status' => ''])->from($tablename)->count_all_results();
-                        // // echo $keyattr . " = " . $attribute . " in condition " . $condition . br();
-                        // // echo "total data = " . $attributeOccurance . br();
-                        // // echo "total data for condition " . $condition . " = " . $totalOccurance . br();
-                        // // $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition])->from('kasus')->count_all_results();
-                        $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition, 'data_status' => ''])->from($tablename)->count_all_results();
-                        // echo "from occurance condition = " .                                                                                                                                                                                                                               $occurance[$condition] . br();
-                        // echo "prior = " . $totalOccurance . "/" . $totalData . " = " . $totalOccurance / $totalData;
+                        $totalData = $this->db->where(['iteration <>' => $iteration])->from($tablename)->count_all_results();
+                        $totalOccurance = $this->db->where(['result_of_treatment' => $condition, 'iteration <>' => $iteration])->from($tablename)->count_all_results();
+                        $occurance[$condition] = $this->db->where([$keyattr => $attribute, 'result_of_treatment' => $condition, 'iteration <>' => $iteration])->from($tablename)->count_all_results();
+
                         $prior[$condition][$keyattr] = $occurance[$condition] / $totalOccurance;
                         $prior[$condition]['total'] = $totalOccurance  / $totalData;
                         $posterior[$condition] *= ($occurance[$condition] / $totalOccurance) * ($totalOccurance / $totalData);
+                        // echo "=====================" . br();
+                        // echo $posterior[$condition] . br();
+                        // echo "=====================" . br();
                     }
                 }
             } else {
@@ -579,10 +623,14 @@ class M_NaiveBayes extends CI_Model
             'success' => 1,
             'fail' => 1
         ];
-
-
-
-        echo br();
+        // echo "==============================" . br();
+        // echo "hasil asli = " . $datas['real_result'] . br();
+        // echo "hasil prediksi = " .  $datas['result'] . br();
+        // echo "<pre>";
+        // echo "==============================" . br();
+        // print_r($datas);
+        // echo "</pre>";
+        // echo br();
         foreach ($this->conditions as $key => $condition) {
             foreach ($prior[$condition] as $key => $data) {
                 // echo $newPosterior[$condition] . " x " . $data . " = " . $newPosterior[$condition] * $data . br();
@@ -590,13 +638,11 @@ class M_NaiveBayes extends CI_Model
             }
         }
 
-        echo "<pre>";
-        // print_r($prior);
-        // print_r($datas);
         // echo ($newPosterior['success'] > $newPosterior['fail']) ? 'success' : 'fail' . br();
+        // print_r($prior);
+        // echo "<pre>";
         // print_r($datas);
-        // die;
-        echo "</pre>";
+        // echo "</pre>";
         $this->db->insert('posterior', $datas);
     }
 
@@ -621,7 +667,7 @@ class M_NaiveBayes extends CI_Model
         $this->db->select('*');
         $dataset = $this->db->get_where($table, ['data_status' => 'testing'])->result_array();
         // calculate mean and standard deviation
-        $this->mean_std($table);
+        // $this->mean_std($table);
         foreach ($dataset as $key => $data) {
             // echo "id = " . $data['id'] . br();
             $this->posteriorCalculation($data, 0, $table);
@@ -680,6 +726,8 @@ class M_NaiveBayes extends CI_Model
     function splitData($mode)
     {
 
+
+
         if ($mode == 'real') {
             $this->db->select('*')->from('kasus')->where(['data_type' => 'original data']);
             $dataset = $this->db->get()->result_array();
@@ -692,14 +740,17 @@ class M_NaiveBayes extends CI_Model
             // $this->db->where(['data_type' => 'testing']);
             $dataset = $this->db->get('kasusrealdata')->result_array();
         }
-        // echo "</pre>";
-
+        // echo "</>";
+        if (isset($dataset[0]['iteration'])) {
+            return "ready";
+        }
         $kfold =  $this->session->userdata('kfold');
         // $kfold = intval($kfold);
         // echo $kfold;
         // echo br();
         // die;
-        shuffle($dataset);
+        if ($dataset)
+            shuffle($dataset);
         $this->crossvalidation->setKfold($kfold);
         $dataset = $this->crossvalidation->splitData($dataset);
 

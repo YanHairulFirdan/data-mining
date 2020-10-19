@@ -199,14 +199,17 @@ class C_naiveBayes extends CI_Controller
 
     public function classificationreal()
     {
-        $this->M_NaiveBayes->classification('real');
+        $this->M_NaiveBayes->partition('realincases');
+        $this->M_NaiveBayes->classification('realincases');
         $this->session->set_userdata('mode', 'data asli');
         redirect('confusionmatrix/');
     }
     public function classificationresampled()
     {
         $this->session->set_userdata('mode', 'data hasil sampling');
+        $this->M_NaiveBayes->partition('resampled');
         $this->M_NaiveBayes->classification('resampled');
+        die;
         redirect('confusionmatrix/');
     }
     public function classificationtest()
@@ -259,6 +262,7 @@ class C_naiveBayes extends CI_Controller
         // echo "called";
         // if ($this->input->method(TRUE) == 'POST') {
         // echo $this->input->post('newkfold');
+        // die;
         $this->session->set_userdata('kfold', intval($this->input->post('newkfold')));
         // $this->session->unset_userdata('kfold');
         // echo br();
@@ -274,5 +278,10 @@ class C_naiveBayes extends CI_Controller
         redirect($_SERVER['HTTP_REFERER']);
 
         // $this->M_NaiveBayes->changekfold($kfold);
+    }
+
+    public function dataPartition()
+    {
+        $this->M_NaiveBayes->partition('resampled');
     }
 }

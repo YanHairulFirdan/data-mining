@@ -85,7 +85,7 @@
           </a>
         </li>
         <li class="nav-item">
-          <a href="<?= site_url() ?>/c_naivebayes/classificationtest" class="nav-link">
+          <a href="<?= site_url() ?>/c_naivebayes/classificationreal" class="nav-link">
             <i class="nav-icon fas fa-th"></i>
             <p>
               Input data training

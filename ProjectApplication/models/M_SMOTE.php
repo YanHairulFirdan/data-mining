@@ -420,7 +420,7 @@ class M_Smote extends CI_Model
 				'induration_diameter' => $data['induration_diameter'],
 				'result_of_treatment' => $data['result_of_treatment'],
 				'data_type' => $data['data_type'],
-				'data_status' => ''
+
 			];
 			$this->db->insert('kasus', $insert);
 		}

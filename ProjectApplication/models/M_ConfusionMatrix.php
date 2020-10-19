@@ -80,17 +80,14 @@ class M_ConfusionMatrix extends CI_Model
 
             // echo "performance for this iteration : " . br();
             // echo "true fail = " . $tp . br();
-            // echo "false fail = " . $fp . br();
-            // echo "true success = " . $tn . br();
             // echo "false success = " . $fn . br();
+            // echo "true success = " . $tn . br();
+            // echo "false fail = " . $fp . br();
             if (!isset($performances[$keys])) {
                 $performances[$keys] = [];
             }
 
-            // echo "true positive = " . $tp . br();
-            // echo "true negative = " . $tn . br();
-            // echo "false positive = " . $fp . br();
-            // echo "false negative = " . $fn . br();
+
             $bottomDivAccr = (($tp + $tn + $fp + $fn) == 0) ? 1 : ($tp + $tn + $fp + $fn);
             $bottomDivPrecisionSuccess = (($tn + $fn) == 0) ? 1 : ($tn + $fn);
             $bottomDivRecallSuccess = (($tn + $fp) == 0) ? 1 : ($tn + $fp);
@@ -127,6 +124,7 @@ class M_ConfusionMatrix extends CI_Model
         // echo "total FP = " . $totalFP . br();
         // echo "total FN = " . $totalFN . br();
         // die;
+
         $avgaccuracy /= $this->session->userdata('kfold');
         $performances['totalTP'] = $totalTP;
         $performances['totalTN'] = $totalTN;
