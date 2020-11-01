@@ -209,7 +209,7 @@ class C_naiveBayes extends CI_Controller
         $this->session->set_userdata('mode', 'data hasil sampling');
         $this->M_NaiveBayes->partition('resampled');
         $this->M_NaiveBayes->classification('resampled');
-        die;
+        // die;
         redirect('confusionmatrix/');
     }
     public function classificationtest()

@@ -15,26 +15,39 @@ class CrossValidation
         echo gettype($k);
         // die;
     }
-    public function splitData($dataset)
+    public function splitData($datasets)
     {
         // shuffle($dataset);
-        $splitedData = [];
-        if (count($dataset) % $this->kFold == 0) {
-            // echo "it is even division" . "<br>";
-            echo count($dataset) / $this->kFold . "<br>";
-            $numberofitem = count($dataset) / $this->kFold;
-            $splitedData = $this->pushData($dataset, $numberofitem);
-        } else {
-            $remain = count($dataset) % $this->kFold;
-            $newItemCount = count($dataset) - $remain;
-            $splitedData = $this->pushData($dataset, $newItemCount / $this->kFold);
-            $counter = $newItemCount;
-            for ($i = 0; $i < $remain; $i++) {
-                array_push($splitedData[$i], $dataset[$counter]);
-                $counter++;
+        $splitedData = [
+            0 => [],
+            1 => []
+        ];
+        $remainData = [];
+        $data = [];
+        foreach ($datasets as $key => $dataset) {
+            if (count($dataset) % $this->kFold == 0) {
+                $numberofitem = count($dataset) / $this->kFold;
+                $splitedData[$key] = $this->pushData($dataset, $numberofitem);
+            } else {
+                $remain = count($dataset) % $this->kFold;
+                $newItemCount = count($dataset) - $remain; //109-4 = 105
+                $splitedData[$key] = $this->pushData($dataset, $newItemCount / $this->kFold);
+                $counter = $newItemCount;
+                for ($i = 0; $i < $remain; $i++) {
+                    array_push($remainData, $dataset[$counter]);
+                    $counter++;
+                }
             }
         }
-        return $splitedData;
+
+
+        for ($i = 0; $i < $this->kFold; $i++) {
+            $data[$i] = array_merge($splitedData[0][$i], $splitedData[1][$i]);
+            if ($i < count($remainData)) {
+                array_push($data[$i], $remainData[$i]);
+            }
+        }
+        return $data;
     }
 
     private function pushData($dataset, $numberofitems)
