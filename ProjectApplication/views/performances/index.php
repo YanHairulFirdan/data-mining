@@ -20,20 +20,20 @@
                             <tbody>
                                 <tr>
                                     <td class="text-bold">Positive</td>
-                                    <td>True Fail :
+                                    <td class="text-center">
                                         <?= $data['tp']; ?>
                                     </td>
-                                    <td>False Success :
+                                    <td class="text-center">
                                         <?= $data['fn']; ?>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="text-bold">Negative</td>
-                                    <td>True Success :
-                                        <?= $data['tn']; ?>
-                                    </td>
-                                    <td>False Fail :
+                                    <td class="text-center">
                                         <?= $data['fp']; ?>
+                                    </td>
+                                    <td class="text-center">
+                                        <?= $data['tn']; ?>
                                     </td>
                                 </tr>
                             </tbody>
