@@ -122,14 +122,7 @@ class M_Smote extends CI_Model
 
 	public function smote($numberDataSample, $percentage, $kVal)
 	{
-
-		// echo "data total : ";
-		// echo "<pre>";
-		// print_r($this->testDataset);
-		// echo "</pre>";
-
 		$this->kVal = $kVal;
-
 		if ($percentage < 100) {
 			$numberDataSample = ($percentage / 100) * $numberDataSample;
 			// echo $numberDataSample;
@@ -144,10 +137,6 @@ class M_Smote extends CI_Model
 			$this->populateData($percentage, $i, $this->nnArray);
 		}
 
-		// echo "<pre>";
-		// print_r(self::$syntheticData);
-		// echo "</pre>";
-		// die;
 		$data = ['sintetis' => self::$syntheticData];
 		$this->session->set_userdata('sintetis', $data);
 	}
@@ -177,10 +166,6 @@ class M_Smote extends CI_Model
 				array_push($sortDistance, $totalDistance);
 			}
 		}
-		// sort($sortDistance);
-		// echo "<pre>";
-		// print_r($distance);
-		// echo "</pre>";
 		return $this->getNeatestDistanceNeighbors($distance, $sortDistance);
 	}
 
@@ -201,11 +186,6 @@ class M_Smote extends CI_Model
 
 	private function roundingVal($data)
 	{
-
-		// echo "<pre>";
-		// print_r($data);
-		// echo "</pre>";
-		// die;
 		for ($i = 0; $i < count($data); $i++) {
 			for ($j = 0; $j < 8; $j++) {
 				if ($j != 2) {
@@ -225,36 +205,12 @@ class M_Smote extends CI_Model
 		while ($percentage != 0) {
 
 			$nn = rand(0, ($this->kVal - 1));
-			// echo "index array data saat ini " . $indexData . br();
-			// echo "<pre>";
-			// print_r($this->testDataset[$indexData]);
-			// echo "</pre>";
-			// echo "index data terdekat : " . $nn;
-			// echo "<pre>";
-			// print_r($this->testDataset[$nnArray[$nn]]);
-			// // print_r($nnArray);
-			// echo "</pre>";
-
 			for ($i = 0; $i < self::numberOfAttributes; $i++) {
 				$gap = mt_rand() / mt_getrandmax();
 				$diff = $this->dataset[$nnArray[$nn]][$i] - $this->dataset[$indexData][$i];
-
-				// $diff = $this->testDataset[$nnArray[$nn]][$i] - $this->testDataset[$indexData][$i];
-				// echo "hasil pengurangan : " . $diff . br();
-				// echo "gap : " . $gap . br();
 				$result = $this->dataset[$indexData][$i] + ($gap * $diff);
-				// $result = $this->testDataset[$indexData][$i] + ($gap * $diff);
-				// $result = number_format($result, 2);
-				// echo "hasil perhitungan " . $result . br();
 				array_push($syntheticTemp, $result);
 			}
-
-			// echo "hasil sintesis data : " . br();
-			// echo "<pre>";
-			// print_r($syntheticTemp);
-			// echo "</pre>";
-			// echo "========================== : " . br();
-
 			array_push(self::$syntheticData, $syntheticTemp);
 			$syntheticTemp = [];
 			$percentage--;
@@ -271,14 +227,6 @@ class M_Smote extends CI_Model
 		$arrayOfLabel = ['sex', 'age', 'time', 'number_of_warts', 'type', 'area', 'induration_diameter', 'result_of_treatment', 'data_type'];
 		$diskretVal = [];
 		$temp = [];
-
-
-
-		// echo "<pre>";
-		// print_r($datas);
-		// echo "</pre>";
-
-		// die;
 		foreach ($datas as $key => $singleTuple) {
 			foreach ($singleTuple as $index => $tuple) {
 				unset($singleTuple['id']);

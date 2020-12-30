@@ -90,10 +90,10 @@
 						<label for="knn">jumlah k nearest neigbor</label>
 						<input type="number" name="knn" class="form-control" id="knn" placeholder="ex.5">
 					</div>
-					<div class="form-group">
+					<!-- <div class="form-group">
 						<label for="kfold">jumlah k-fold</label>
 						<input type="number" name="kfold" class="form-control" id="kfold" placeholder="ex.5">
-					</div>
+					</div> -->
 					<button type="submit" class="btn btn-primary">mulai sampling data</button>
 					<!-- <a class="btn btn-primary ml-2" id="tgl-btn" href="<?= site_url(); ?>/smote/resamplingdata">mulai sampling data</a> -->
 

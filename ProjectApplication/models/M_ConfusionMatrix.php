@@ -1,6 +1,7 @@
 <?php
 class M_ConfusionMatrix extends CI_Model
 {
+    private $kfold = 5;
     public function splitData()
     {
         $dataSet = $this->db->get('posterior')->result_array();
@@ -8,7 +9,7 @@ class M_ConfusionMatrix extends CI_Model
         // echo "<pre>";
         // print_r($dataSet);
         // echo "</pre>";
-        for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
+        for ($i = 0; $i < $this->kfold; $i++) {
             foreach ($dataSet as $key => $data) {
 
                 if ($data['iteration'] == $i) {
@@ -125,17 +126,43 @@ class M_ConfusionMatrix extends CI_Model
         // echo "total FN = " . $totalFN . br();
         // die;
 
-        $avgaccuracy /= $this->session->userdata('kfold');
+        $avgaccuracy /= $this->kfold;
         $performances['totalTP'] = $totalTP;
         $performances['totalTN'] = $totalTN;
         $performances['totalFP'] = $totalFP;
         $performances['totalFN'] = $totalFN;
-        $performances['avgAccuracy'] = $avgaccuracy;
-        $performances['avgprecision'] = $avgPrecision / $this->session->userdata('kfold');
-        $performances['avgrecall'] = $avgrecall / $this->session->userdata('kfold');
+        $performances['avgAccuracy'] = ($totalTN + $totalTP) / ($totalTP + $totalTN + $totalFP + $totalFN);
+        $performances['avegRecalPositive'] = $totalTP / ($totalTP + $totalFN);
+        $performances['avegRecalNegative'] = $totalTN / ($totalTN + $totalFP);
+        $performances['avgprecisionPositive'] = $totalTP / ($totalTP + $totalFP);
+        $performances['avgprecisionNegative'] = $totalTN / ($totalTN + $totalFN);
+        $performances['sensitivity'] = $totalTP / ($totalTP + $totalFN);
+        $performances['specificity'] = $totalTN / ($totalTN + $totalFP);
+        $performances['avgprecisionNegative'] = $totalTP / ($totalTN + $totalFN);
+        $performances['avgrecall'] = $avgrecall / $this->kfold;
         // echo "<pre>";
+        // print_r($avgaccuracy);
         // print_r($performances);
         // echo "</pre>";
+        // die;
+        $data = [
+            "sampling_percentage" => $this->session->userdata("sampling_percentage"),
+            "amount_of_knn" => $this->session->userdata("amount_of_knn"),
+            "true_positive" => $totalTP,
+            "false_negative" => $totalFN,
+            "true_negative" => $totalTN,
+            "false_positive" => $totalFP,
+            "accuracy" => $performances['avgAccuracy'],
+            "presisi" => $performances['avgprecisionPositive'],
+            "recall" => $performances['avegRecalPositive'],
+            "sensitivity" => $performances['avegRecalPositive'],
+            "specificity" => $performances['avegRecalNegative'],
+            "f1Score" => ((2 * $performances['avgprecisionPositive'] * $performances['avegRecalPositive']) / ($performances['avgprecisionPositive'] + $performances['avegRecalPositive'])),
+            "status" => $this->session->userdata("status")
+        ];
+        $this->db->insert("performances", $data);
+
+
         // die;
 
         return $performances;

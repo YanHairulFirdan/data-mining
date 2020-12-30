@@ -35,10 +35,12 @@ class Smote extends CI_Controller
 		$this->db->query("TRUNCATE rawdata");
 		$this->session->unset_userdata('data_type');
 		$this->session->set_flashdata('msg', 'simpan data');
-		$persentase = intval($this->input->post('persentase') . br());
-		$knn = intval($this->input->post('knn') . br());
-		$kfold = intval($this->input->post('kfold') . br());
-		$this->session->set_userdata('kfold', $kfold);
+		$persentase = intval($this->input->post('persentase'));
+		$knn = intval($this->input->post('knn'));
+		// $kfold = intval($this->input->post('kfold'));
+		// $this->session->set_userdata('kfold', $kfold);
+		$this->session->set_userdata("sampling_percentage", intval($this->input->post('persentase')));
+		$this->session->set_userdata("amount_of_knn",  intval($this->input->post('knn')));
 		// echo $this->session->flashdata('kfold');
 		// die;
 		$this->M_Smote->smote(19, $persentase, $knn);

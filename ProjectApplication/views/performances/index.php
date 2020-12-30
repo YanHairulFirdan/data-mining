@@ -89,7 +89,31 @@
                     </tr>
                     <tr>
                         <th>Rata-rata akurasi</th>
-                        <td colspan="2" class="text-center text-bold"><?= $dataset['avgAccuracy'] * 100 ?>%</td>
+                        <td colspan="2" class="text-center text-bold"><?= number_format((($dataset['totalTP'] + $dataset['totalTN']) / ($dataset['totalTP'] + $dataset['totalTN'] + $dataset['totalFP'] + $dataset['totalFN'])) * 100) ?>%</td>
+                    </tr>
+                    <tr>
+                        <th>Recall class positive</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['avegRecalPositive'] * 100) ?>%</td>
+                    </tr>
+                    <!-- <tr>
+                        <th>Recall class negative</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['avegRecalNegative'] * 100) ?>%</td>
+                    </tr> -->
+                    <tr>
+                        <th>Precision class positive</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['avgprecisionPositive'] * 100) ?>%</td>
+                    </tr>
+                    <!-- <tr>
+                        <th>Precision class negative</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['avgprecisionNegative'] * 100) ?>%</td>
+                    </tr> -->
+                    <tr>
+                        <th>sensitivity</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['sensitivity'] * 100) ?>%</td>
+                    </tr>
+                    <tr>
+                        <th>specificity</th>
+                        <td colspan="2" class="text-center text-bold"><?= number_format($dataset['specificity'] * 100) ?>%</td>
                     </tr>
                 </tbody>
             </table>

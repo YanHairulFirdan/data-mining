@@ -2,7 +2,7 @@
 
 class M_NaiveBayes extends CI_Model
 {
-
+    private $kfold = 5;
     public function __construct()
     {
         parent::__construct();
@@ -455,7 +455,7 @@ class M_NaiveBayes extends CI_Model
         // looping for cross validation
         // get iteration data from mean and standard deviation table
         // $count = 0;
-        for ($i = 0; $i < $this->session->userdata('kfold'); $i++) {
+        for ($i = 0; $i < $this->kfold; $i++) {
             $this->mean_std($table, $i);
             // echo "running ...." . br();
             foreach ($dataset as $data) {
@@ -657,7 +657,7 @@ class M_NaiveBayes extends CI_Model
         if (isset($dataset[0][0]['iteration'])) {
             return "ready";
         }
-        $kfold =  $this->session->userdata('kfold');
+        $kfold =  $this->kfold;
         $this->crossvalidation->setKfold($kfold);
         $dataset = $this->crossvalidation->splitData($dataset);
 
@@ -667,5 +667,25 @@ class M_NaiveBayes extends CI_Model
     public function changekfold($kfold)
     {
         $this->crossvalidation->setKfold($kfold);
+    }
+
+    public function matchData()
+    {
+        $column = [
+            "sex", "age", "time", "number_of_warts", "type", "area", "induration_diameter",    "result_of_treatment"
+        ];
+        $this->db->select($column);
+        $kasus = $this->db->get_where('kasus', ['data_type' => 'original data'])->result_array();
+        $this->db->select($column);
+        $kasusrealdata = $this->db->get('kasusrealdata')->result_array();
+        $counter = 0;
+        foreach ($kasus as $key => $data1) {
+            foreach ($kasusrealdata as $key => $data2) {
+                if ($data1 == $data2) {
+                    $counter++;
+                }
+            }
+        }
+        echo "jumlah data yang sama = " . $counter;
     }
 }

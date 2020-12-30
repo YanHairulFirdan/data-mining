@@ -201,15 +201,18 @@ class C_naiveBayes extends CI_Controller
     {
         $this->M_NaiveBayes->partition('realincases');
         $this->M_NaiveBayes->classification('realincases');
+        $this->session->set_userdata("sampling_percentage", 0);
+        $this->session->set_userdata("amount_of_knn", 0);
+        $this->session->set_userdata("status", "data asli");
         $this->session->set_userdata('mode', 'data asli');
         redirect('confusionmatrix/');
     }
     public function classificationresampled()
     {
+        $this->session->set_userdata("status", "data sampling");
         $this->session->set_userdata('mode', 'data hasil sampling');
         $this->M_NaiveBayes->partition('resampled');
         $this->M_NaiveBayes->classification('resampled');
-        // die;
         redirect('confusionmatrix/');
     }
     public function classificationtest()
@@ -221,8 +224,6 @@ class C_naiveBayes extends CI_Controller
         }
         $this->M_NaiveBayes->classification('realincases');
         redirect('confusionmatrix/');
-
-        // $this->M_NaiveBayes->testingFun('kasusrealdata');
     }
 
 
@@ -248,40 +249,21 @@ class C_naiveBayes extends CI_Controller
         redirect(site_url('user/login'));
     }
 
-
-    // public function posterior()
-    // {
-    //     $this->db->query('TRUNCATE mean_and_stdeviation');
-    //     $data = $this->db->get_where('kasus', ['id' => 138])->result_array();
-
-    //     // print_r($data);
-    //     $this->M_NaiveBayes->posteriorCalculation($data);
-    // }
     function changeKFold()
     {
-        // echo "called";
-        // if ($this->input->method(TRUE) == 'POST') {
-        // echo $this->input->post('newkfold');
-        // die;
+        $this->db->query("UPDATE kasus SET iteration = null");
+        $this->db->query("UPDATE kasusrealdata SET iteration = null");
         $this->session->set_userdata('kfold', intval($this->input->post('newkfold')));
-        // $this->session->unset_userdata('kfold');
-        // echo br();
-        // echo $this->session->userdata('newkfold');
-        // die;
-        //     // $kfold = $this->input->post('newkfold');
-        //     if (!empty($this->input->post('newkfold'))) {
-        //         echo $this->input->post('newkfold');
-        //     } else {
-        //         echo 'empty';
-        //     }
-        // }
         redirect($_SERVER['HTTP_REFERER']);
-
-        // $this->M_NaiveBayes->changekfold($kfold);
     }
 
     public function dataPartition()
     {
         $this->M_NaiveBayes->partition('resampled');
+    }
+
+    public function matchingdata()
+    {
+        $this->M_NaiveBayes->matchData();
     }
 }
